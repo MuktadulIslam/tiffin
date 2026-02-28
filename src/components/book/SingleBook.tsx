@@ -1,19 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import type { Book, CartItem } from "@/lib/data";
+import { useRouter } from "next/navigation";
+import type { Book } from "@/lib/data";
 import { fmt } from "@/lib/data";
 import { deriveColors } from "@/lib/colorUtils";
+import { useCart } from "@/context/CartContext";
 import LeafBg from "@/components/ui/LeafBg";
 import Stars from "@/components/ui/Stars";
-
-interface SingleBookProps {
-  book: Book;
-  onBack: () => void;
-  onCheckout: () => void;
-  cart: CartItem[];
-  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
-}
 
 const chapters = [
   "Introduction to Biology",
@@ -26,7 +20,9 @@ const chapters = [
   "Applied Concepts",
 ];
 
-export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart }: SingleBookProps) {
+export default function SingleBook({ book: bk }: { book: Book }) {
+  const router = useRouter();
+  const { cart, setCart } = useCart();
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState("about");
   const inCart = cart.find((c) => c.id === bk.id);
@@ -57,7 +53,7 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
       {/* Nav */}
       <nav className="relative z-20 flex items-center justify-between px-10 py-4">
         <button
-          onClick={onBack}
+          onClick={() => router.back()}
           className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors font-semibold"
         >
           <svg
@@ -78,7 +74,7 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
           Tif<span style={{ color: accent }}>Fin</span>
         </span>
         <button
-          onClick={onCheckout}
+          onClick={() => router.push("/checkout")}
           className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:scale-105"
           style={{ background: accent }}
         >
@@ -296,7 +292,7 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
             <button
               onClick={() => {
                 addToCart();
-                onCheckout();
+                router.push("/checkout");
               }}
               className="flex-1 py-3.5 rounded-full font-black text-sm transition-all hover:scale-105 active:scale-95 border-2 shadow-sm"
               style={{

@@ -1,20 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { books, fmt } from "@/lib/data";
-import type { Book } from "@/lib/data";
 import { deriveColors } from "@/lib/colorUtils";
+import { useCart } from "@/context/CartContext";
 import LeafBg from "@/components/ui/LeafBg";
 import HexBg from "@/components/ui/HexBg";
 import Stars from "@/components/ui/Stars";
 
-interface HomeProps {
-  onBook: (book: Book) => void;
-  onCart: () => void;
-  cartCount: number;
-}
-
-export default function Home({ onBook, onCart, cartCount }: HomeProps) {
+export default function Home() {
+  const router = useRouter();
+  const { cartCount } = useCart();
   const [active, setActive] = useState(0);
   const [fading, setFading] = useState(false);
 
@@ -81,11 +78,14 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
           </span>
         </div>
         <div className="flex items-center gap-8">
-          <span className="text-[11px] uppercase tracking-[0.22em] text-slate-400 font-semibold">
-            Biology Books
-          </span>
           <button
-            onClick={onCart}
+            onClick={() => router.push("/book")}
+            className="text-[11px] uppercase tracking-[0.22em] text-slate-400 font-semibold hover:text-slate-700 transition-colors"
+          >
+            Biology Books
+          </button>
+          <button
+            onClick={() => router.push("/checkout")}
             className="relative flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
             style={{
               background: accent,
@@ -180,7 +180,7 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
                 </div>
               </div>
               <button
-                onClick={() => onBook(b)}
+                onClick={() => router.push(`/book/${b.id}`)}
                 className="px-9 py-4 rounded-full font-black text-sm text-white transition-all hover:scale-105 active:scale-95 shadow-xl"
                 style={{
                   background: accent,
@@ -188,6 +188,17 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
                 }}
               >
                 View Details →
+              </button>
+              <button
+                onClick={() => router.push("/book")}
+                className="px-7 py-4 rounded-full font-black text-sm transition-all hover:scale-105 active:scale-95 border-2"
+                style={{
+                  borderColor: accent,
+                  color: accent,
+                  background: accentLight,
+                }}
+              >
+                Browse Books
               </button>
             </div>
           </div>

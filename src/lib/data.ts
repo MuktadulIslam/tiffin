@@ -37,7 +37,7 @@ export const books: Book[] = [
   },
   {
     id: 2,
-    title: "Campbell Biology",
+    title: "Campbell Biology & Animal Anatomy",
     author: "Lisa Urry, Michael Cain",
     price: 2200,
     originalPrice: 2900,

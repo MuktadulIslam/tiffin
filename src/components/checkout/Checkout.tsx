@@ -1,22 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import type { CartItem } from "@/lib/data";
+import { useRouter } from "next/navigation";
 import { fmt } from "@/lib/data";
 import { deriveColors } from "@/lib/colorUtils";
+import { useCart } from "@/context/CartContext";
 import LeafBg from "@/components/ui/LeafBg";
 import HexBg from "@/components/ui/HexBg";
-
-interface CheckoutProps {
-  cart: CartItem[];
-  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
-  onBack: () => void;
-}
 
 const G = "#1e7e3e";
 const { bgLight: GL } = deriveColors(G);
 
-export default function Checkout({ cart, setCart, onBack }: CheckoutProps) {
+export default function Checkout() {
+  const router = useRouter();
+  const { cart, setCart } = useCart();
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -94,7 +91,7 @@ export default function Checkout({ cart, setCart, onBack }: CheckoutProps) {
             </div>
           )}
           <button
-            onClick={onBack}
+            onClick={() => router.push("/")}
             className="px-10 py-3.5 rounded-full font-black text-white hover:scale-105 transition-all shadow-xl"
             style={{ background: G, boxShadow: `0 8px 28px ${G}45` }}
           >
@@ -116,7 +113,7 @@ export default function Checkout({ cart, setCart, onBack }: CheckoutProps) {
       {/* Nav */}
       <nav className="relative z-20 flex items-center justify-between px-10 py-4">
         <button
-          onClick={onBack}
+          onClick={() => router.back()}
           className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors font-semibold"
         >
           <svg
@@ -191,7 +188,7 @@ export default function Checkout({ cart, setCart, onBack }: CheckoutProps) {
                     <p className="text-5xl mb-4">📚</p>
                     <p className="font-semibold">Your cart is empty</p>
                     <button
-                      onClick={onBack}
+                      onClick={() => router.push("/book")}
                       className="mt-4 px-7 py-2.5 rounded-full text-white font-bold text-sm shadow-lg"
                       style={{ background: G }}
                     >
