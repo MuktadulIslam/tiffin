@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { books, fmt } from "@/lib/data";
 import type { Book } from "@/lib/data";
+import { deriveColors } from "@/lib/colorUtils";
 import LeafBg from "@/components/ui/LeafBg";
 import HexBg from "@/components/ui/HexBg";
 import Stars from "@/components/ui/Stars";
@@ -35,19 +36,20 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
   }, []);
 
   const b = books[active];
+  const { accent, accentLight, bgMid, bgLight } = deriveColors(b.color);
 
   return (
     <div
       className="min-h-screen overflow-hidden relative font-sans transition-colors duration-700"
-      style={{ background: b.bgLight }}
+      style={{ background: bgLight }}
     >
-      <LeafBg color={b.accent} />
+      <LeafBg color={accent} />
 
       {/* Top-right soft blob */}
       <div
         className="absolute top-0 right-0 w-[650px] h-[650px] rounded-full pointer-events-none transition-all duration-700"
         style={{
-          background: `radial-gradient(circle, ${b.bgMid}cc 0%, transparent 65%)`,
+          background: `radial-gradient(circle, ${bgMid}cc 0%, transparent 65%)`,
           transform: "translate(25%,-25%)",
         }}
       />
@@ -55,7 +57,7 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
       <div
         className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none transition-all duration-700"
         style={{
-          background: `radial-gradient(circle, ${b.bgMid}88 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${bgMid}88 0%, transparent 70%)`,
           transform: "translate(-30%,30%)",
         }}
       />
@@ -65,9 +67,9 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
         <div className="flex items-center gap-3">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
-            style={{ background: b.accentLight }}
+            style={{ background: accentLight }}
           >
-            <svg viewBox="0 0 24 24" className="w-5 h-5" fill={b.accent}>
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill={accent}>
               <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" />
             </svg>
           </div>
@@ -75,7 +77,7 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
             className="text-lg font-black tracking-tight text-slate-800"
             style={{ fontFamily: "'Georgia',serif" }}
           >
-            Tif<span style={{ color: b.accent }}>Fin</span>
+            Tif<span style={{ color: accent }}>Fin</span>
           </span>
         </div>
         <div className="flex items-center gap-8">
@@ -86,8 +88,8 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
             onClick={onCart}
             className="relative flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
             style={{
-              background: b.accent,
-              boxShadow: `0 4px 18px ${b.accent}45`,
+              background: accent,
+              boxShadow: `0 4px 18px ${accent}45`,
             }}
           >
             <svg
@@ -120,14 +122,14 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black mb-7 shadow-sm"
               style={{
-                background: b.accentLight,
-                color: b.accent,
-                border: `1.5px solid ${b.accent}35`,
+                background: accentLight,
+                color: accent,
+                border: `1.5px solid ${accent}35`,
               }}
             >
               <span
                 className="w-2 h-2 rounded-full animate-pulse"
-                style={{ background: b.accent }}
+                style={{ background: accent }}
               />
               {b.tag}
             </div>
@@ -153,9 +155,9 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
                   key={t}
                   className="text-xs px-3 py-1.5 rounded-full font-semibold"
                   style={{
-                    background: b.accentLight,
-                    color: b.accent,
-                    border: `1px solid ${b.accent}25`,
+                    background: accentLight,
+                    color: accent,
+                    border: `1px solid ${accent}25`,
                   }}
                 >
                   {t}
@@ -169,7 +171,7 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
                   Price
                 </p>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-black" style={{ color: b.accent }}>
+                  <span className="text-4xl font-black" style={{ color: accent }}>
                     {fmt(b.price)}
                   </span>
                   <span className="text-slate-400 line-through text-sm">
@@ -181,8 +183,8 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
                 onClick={() => onBook(b)}
                 className="px-9 py-4 rounded-full font-black text-sm text-white transition-all hover:scale-105 active:scale-95 shadow-xl"
                 style={{
-                  background: b.accent,
-                  boxShadow: `0 10px 30px ${b.accent}50`,
+                  background: accent,
+                  boxShadow: `0 10px 30px ${accent}50`,
                 }}
               >
                 View Details →
@@ -193,13 +195,13 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
 
         {/* Right — floating book */}
         <div className="w-[500px] flex items-center justify-center relative">
-          <HexBg color={b.accent} />
+          <HexBg color={accent} />
 
           {/* Inner glow circle */}
           <div
             className="absolute w-72 h-72 rounded-full pointer-events-none transition-all duration-700"
             style={{
-              background: b.bgMid,
+              background: bgMid,
               filter: "blur(50px)",
               opacity: 0.65,
             }}
@@ -214,14 +216,14 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
             {/* Ground shadow */}
             <div
               className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-8 w-40 h-5 rounded-full blur-xl opacity-25 transition-colors duration-700"
-              style={{ background: b.accent }}
+              style={{ background: accent }}
             />
 
             {/* Book */}
             <div
               className="relative w-56 rounded-3xl overflow-hidden bg-white"
               style={{
-                boxShadow: `0 35px 80px ${b.accent}40, 0 8px 20px rgba(0,0,0,0.08)`,
+                boxShadow: `0 35px 80px ${accent}40, 0 8px 20px rgba(0,0,0,0.08)`,
               }}
             >
               <img
@@ -230,7 +232,7 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
                 className="w-full object-cover"
                 style={{ height: "340px" }}
               />
-              <div className="p-4 border-t" style={{ borderColor: b.accent + "15" }}>
+              <div className="p-4 border-t" style={{ borderColor: accent + "15" }}>
                 <p className="text-slate-800 font-black text-xs line-clamp-2 leading-snug">
                   {b.title}
                 </p>
@@ -251,10 +253,10 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
                 style={{
                   width: i === active ? "28px" : "8px",
                   height: "8px",
-                  background: i === active ? b.accent : b.bgMid,
+                  background: i === active ? accent : bgMid,
                   border:
                     i === active
-                      ? `1.5px solid ${b.accent}`
+                      ? `1.5px solid ${accent}`
                       : "1.5px solid transparent",
                 }}
               />
@@ -269,43 +271,46 @@ export default function Home({ onBook, onCart, cartCount }: HomeProps) {
         style={{ borderColor: "rgba(0,0,0,0.06)" }}
       >
         <div className="flex">
-          {books.map((bk, i) => (
-            <button
-              key={bk.id}
-              onClick={() => go(i)}
-              className="flex-1 flex items-center gap-3 px-5 py-4 border-r last:border-0 transition-all"
-              style={{
-                borderColor: "rgba(0,0,0,0.05)",
-                background: i === active ? bk.accentLight + "99" : "transparent",
-              }}
-            >
-              <img
-                src={bk.cover}
-                alt={bk.title}
-                className="w-10 h-14 object-cover rounded-lg shadow-sm shrink-0"
+          {books.map((bk, i) => {
+            const bkC = deriveColors(bk.color);
+            return (
+              <button
+                key={bk.id}
+                onClick={() => go(i)}
+                className="flex-1 flex items-center gap-3 px-5 py-4 border-r last:border-0 transition-all"
                 style={{
-                  outline: i === active ? `2px solid ${bk.accent}` : "none",
+                  borderColor: "rgba(0,0,0,0.05)",
+                  background: i === active ? bkC.accentLight + "99" : "transparent",
                 }}
-              />
-              <div className="text-left">
-                <p className="text-xs font-bold text-slate-700 leading-tight line-clamp-2">
-                  {bk.title}
-                </p>
-                <p
-                  className="text-xs mt-1 font-black"
-                  style={{ color: i === active ? bk.accent : "#94a3b8" }}
-                >
-                  {fmt(bk.price)}
-                </p>
-              </div>
-              {i === active && (
-                <div
-                  className="ml-auto w-2 h-2 rounded-full shrink-0 animate-pulse"
-                  style={{ background: bk.accent }}
+              >
+                <img
+                  src={bk.cover}
+                  alt={bk.title}
+                  className="w-10 h-14 object-cover rounded-lg shadow-sm shrink-0"
+                  style={{
+                    outline: i === active ? `2px solid ${bkC.accent}` : "none",
+                  }}
                 />
-              )}
-            </button>
-          ))}
+                <div className="text-left">
+                  <p className="text-xs font-bold text-slate-700 leading-tight line-clamp-2">
+                    {bk.title}
+                  </p>
+                  <p
+                    className="text-xs mt-1 font-black"
+                    style={{ color: i === active ? bkC.accent : "#94a3b8" }}
+                  >
+                    {fmt(bk.price)}
+                  </p>
+                </div>
+                {i === active && (
+                  <div
+                    className="ml-auto w-2 h-2 rounded-full shrink-0 animate-pulse"
+                    style={{ background: bkC.accent }}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Book, CartItem } from "@/lib/data";
 import { fmt } from "@/lib/data";
+import { deriveColors } from "@/lib/colorUtils";
 import LeafBg from "@/components/ui/LeafBg";
 import Stars from "@/components/ui/Stars";
 
@@ -29,6 +30,7 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState("about");
   const inCart = cart.find((c) => c.id === bk.id);
+  const { accent, accentLight, bgMid, bgLight } = deriveColors(bk.color);
 
   const addToCart = () => {
     setCart((prev) => {
@@ -42,12 +44,12 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
   };
 
   return (
-    <div className="min-h-screen font-sans relative" style={{ background: bk.bgLight }}>
-      <LeafBg color={bk.accent} />
+    <div className="min-h-screen font-sans relative" style={{ background: bgLight }}>
+      <LeafBg color={accent} />
       <div
         className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full pointer-events-none"
         style={{
-          background: `radial-gradient(circle,${bk.bgMid}cc 0%,transparent 70%)`,
+          background: `radial-gradient(circle,${bgMid}cc 0%,transparent 70%)`,
           transform: "translate(-30%,-30%)",
         }}
       />
@@ -73,12 +75,12 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
           className="text-base font-black text-slate-800"
           style={{ fontFamily: "'Georgia',serif" }}
         >
-          Tif<span style={{ color: bk.accent }}>Fin</span>
+          Tif<span style={{ color: accent }}>Fin</span>
         </span>
         <button
           onClick={onCheckout}
           className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:scale-105"
-          style={{ background: bk.accent }}
+          style={{ background: accent }}
         >
           <svg
             className="w-4 h-4"
@@ -103,12 +105,12 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
             <style>{`@keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}`}</style>
             <div
               className="absolute -inset-5 rounded-3xl blur-3xl opacity-25 transition-all duration-700"
-              style={{ background: bk.bgMid }}
+              style={{ background: bgMid }}
             />
             <div
               className="relative w-52 rounded-2xl overflow-hidden bg-white"
               style={{
-                boxShadow: `0 25px 65px ${bk.accent}38,0 4px 14px rgba(0,0,0,0.08)`,
+                boxShadow: `0 25px 65px ${accent}38,0 4px 14px rgba(0,0,0,0.08)`,
               }}
             >
               <img
@@ -117,7 +119,7 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
                 className="w-full object-cover"
                 style={{ height: "300px" }}
               />
-              <div className="p-4 border-t" style={{ borderColor: bk.accent + "20" }}>
+              <div className="p-4 border-t" style={{ borderColor: accent + "20" }}>
                 <p className="text-slate-800 font-black text-xs leading-snug line-clamp-2">
                   {bk.title}
                 </p>
@@ -133,10 +135,10 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
             <div
               key={String(l)}
               className="w-52 flex justify-between items-center px-4 py-2.5 rounded-xl bg-white shadow-sm border"
-              style={{ borderColor: bk.accent + "18" }}
+              style={{ borderColor: accent + "18" }}
             >
               <span className="text-xs text-slate-400 font-semibold">{l}</span>
-              <span className="text-sm font-black" style={{ color: bk.accent }}>
+              <span className="text-sm font-black" style={{ color: accent }}>
                 {v}
               </span>
             </div>
@@ -148,14 +150,14 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
           <div
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black mb-5 shadow-sm"
             style={{
-              background: bk.accentLight,
-              color: bk.accent,
-              border: `1.5px solid ${bk.accent}30`,
+              background: accentLight,
+              color: accent,
+              border: `1.5px solid ${accent}30`,
             }}
           >
             <span
               className="w-2 h-2 rounded-full animate-pulse"
-              style={{ background: bk.accent }}
+              style={{ background: accent }}
             />
             {bk.tag}
           </div>
@@ -180,9 +182,9 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
                 key={t}
                 className="text-xs px-3 py-1.5 rounded-full font-bold border"
                 style={{
-                  background: bk.accentLight,
-                  color: bk.accent,
-                  borderColor: bk.accent + "28",
+                  background: accentLight,
+                  color: accent,
+                  borderColor: accent + "28",
                 }}
               >
                 {t}
@@ -198,7 +200,7 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
                 onClick={() => setTab(t)}
                 className="px-5 py-2 rounded-lg text-sm font-bold capitalize transition-all"
                 style={{
-                  background: tab === t ? bk.accent : "transparent",
+                  background: tab === t ? accent : "transparent",
                   color: tab === t ? "#fff" : "#94a3b8",
                 }}
               >
@@ -220,7 +222,7 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
                   <div key={c} className="flex items-center gap-2 py-1.5 text-xs">
                     <span
                       className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0"
-                      style={{ background: bk.accentLight, color: bk.accent }}
+                      style={{ background: accentLight, color: accent }}
                     >
                       {i + 1}
                     </span>
@@ -258,7 +260,7 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
                 Price
               </p>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black" style={{ color: bk.accent }}>
+                <span className="text-3xl font-black" style={{ color: accent }}>
                   {fmt(bk.price)}
                 </span>
                 <span className="text-slate-300 line-through text-sm">
@@ -285,8 +287,8 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
               onClick={addToCart}
               className="flex-1 py-3.5 rounded-full font-black text-sm text-white transition-all hover:scale-105 active:scale-95 shadow-lg"
               style={{
-                background: bk.accent,
-                boxShadow: `0 6px 22px ${bk.accent}48`,
+                background: accent,
+                boxShadow: `0 6px 22px ${accent}48`,
               }}
             >
               {inCart ? "✓ Added — Add More" : "Add to Cart"}
@@ -298,9 +300,9 @@ export default function SingleBook({ book: bk, onBack, onCheckout, cart, setCart
               }}
               className="flex-1 py-3.5 rounded-full font-black text-sm transition-all hover:scale-105 active:scale-95 border-2 shadow-sm"
               style={{
-                borderColor: bk.accent,
-                color: bk.accent,
-                background: bk.accentLight,
+                borderColor: accent,
+                color: accent,
+                background: accentLight,
               }}
             >
               Buy Now

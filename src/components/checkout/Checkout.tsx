@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { CartItem } from "@/lib/data";
 import { fmt } from "@/lib/data";
+import { deriveColors } from "@/lib/colorUtils";
 import LeafBg from "@/components/ui/LeafBg";
 import HexBg from "@/components/ui/HexBg";
 
@@ -13,7 +14,7 @@ interface CheckoutProps {
 }
 
 const G = "#1e7e3e";
-const GL = "#edf7f0";
+const { bgLight: GL } = deriveColors(G);
 
 export default function Checkout({ cart, setCart, onBack }: CheckoutProps) {
   const [form, setForm] = useState({
@@ -231,7 +232,7 @@ export default function Checkout({ cart, setCart, onBack }: CheckoutProps) {
                                 +
                               </button>
                             </div>
-                            <span className="text-sm font-black" style={{ color: c.accent }}>
+                            <span className="text-sm font-black" style={{ color: c.color }}>
                               {fmt(c.price * c.qty)}
                             </span>
                             <button
@@ -524,7 +525,7 @@ export default function Checkout({ cart, setCart, onBack }: CheckoutProps) {
                           {c.title}{" "}
                           <span className="text-slate-400">×{c.qty}</span>
                         </span>
-                        <span className="text-sm font-black" style={{ color: c.accent }}>
+                        <span className="text-sm font-black" style={{ color: c.color }}>
                           {fmt(c.price * c.qty)}
                         </span>
                       </div>
@@ -577,7 +578,7 @@ export default function Checkout({ cart, setCart, onBack }: CheckoutProps) {
                   </div>
                   <span
                     className="text-xs font-black self-end shrink-0"
-                    style={{ color: c.accent }}
+                    style={{ color: c.color }}
                   >
                     {fmt(c.price * c.qty)}
                   </span>

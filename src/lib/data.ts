@@ -5,10 +5,7 @@ export interface Book {
   price: number;
   originalPrice: number;
   cover: string;
-  bgLight: string;
-  bgMid: string;
-  accent: string;
-  accentLight: string;
+  color: string;
   description: string;
   pages: number;
   rating: number;
@@ -29,10 +26,7 @@ export const books: Book[] = [
     price: 1850,
     originalPrice: 2400,
     cover: "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=400&q=80",
-    bgLight: "#edf7f0",
-    bgMid: "#b7e4c7",
-    accent: "#1e7e3e",
-    accentLight: "#d8f3e3",
+    color: "#1e7e3e",
     description:
       "A comprehensive journey into the molecular machinery of life. Discover DNA, proteins, and the exquisite complexity of cellular biology.",
     pages: 820,
@@ -48,10 +42,7 @@ export const books: Book[] = [
     price: 2200,
     originalPrice: 2900,
     cover: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=400&q=80",
-    bgLight: "#edf4fd",
-    bgMid: "#bdd7f5",
-    accent: "#1558b0",
-    accentLight: "#dbeeff",
+    color: "#1558b0",
     description:
       "The gold standard in biology education. From atoms to ecosystems, this book weaves together life's grand tapestry with stunning clarity.",
     pages: 1464,
@@ -67,10 +58,7 @@ export const books: Book[] = [
     price: 1650,
     originalPrice: 2100,
     cover: "https://images.unsplash.com/photo-1559757175-5700dde675bc?w=400&q=80",
-    bgLight: "#fdf0ed",
-    bgMid: "#f5c4b5",
-    accent: "#b03020",
-    accentLight: "#fde5de",
+    color: "#b03020",
     description:
       "Explore the breathtaking architecture of the human body. From neurons firing to hearts beating—life revealed in magnificent detail.",
     pages: 1264,
@@ -86,10 +74,7 @@ export const books: Book[] = [
     price: 1980,
     originalPrice: 2600,
     cover: "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=400&q=80",
-    bgLight: "#f3f0fc",
-    bgMid: "#d5ccf5",
-    accent: "#5235a0",
-    accentLight: "#ece8fc",
+    color: "#5235a0",
     description:
       "Written by the co-discoverer of DNA's double helix. The definitive text on gene expression, regulation, and the secrets hidden in our genome.",
     pages: 900,
