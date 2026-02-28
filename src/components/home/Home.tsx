@@ -113,7 +113,7 @@ export default function Home() {
       </nav>
 
       {/* HERO */}
-      <div className="relative z-10 flex flex-col md:flex-row min-h-[calc(100vh-68px)] pb-44 md:pb-28">
+      <div className="relative z-10 flex flex-col md:flex-row min-h-[calc(100vh-68px)] pb-28">
         {/* Left — text */}
         <div className="flex-1 flex items-center px-4 sm:px-8 md:pl-16 md:pr-6 pt-6 md:pt-0">
           <div
@@ -143,7 +143,7 @@ export default function Home() {
             </h1>
             <p className="text-slate-500 text-sm mb-3">
               by{" "}
-              <span className="text-slate-700 font-bold">{b.author}</span>
+              <span className="text-slate-700 font-bold">{b.author.join(" | ")}</span>
             </p>
             <Stars rating={b.rating} />
             <p className="text-slate-500 text-sm leading-relaxed max-w-md mt-4 mb-5">
@@ -178,6 +178,12 @@ export default function Home() {
                   <span className="text-slate-400 line-through text-sm">
                     {fmt(b.originalPrice)}
                   </span>
+                  <span
+                    className="text-xs font-black px-2 py-0.5 rounded-full text-white"
+                    style={{ background: accent }}
+                  >
+                    {Math.round((1 - b.price / b.originalPrice) * 100)}% off
+                  </span>
                 </div>
               </div>
               <button
@@ -205,13 +211,70 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right — floating book (hidden on small screens, shown on md+) */}
-        <div className="hidden md:flex w-[500px] items-center justify-center relative">
+        {/* Right — floating book (desktop: full panel, mobile: inline card) */}
+        <div className="md:hidden flex flex-col items-center px-2 pt-6 pb-2">
+          <style>{`@keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}`}</style>
+          {/* Mobile book card — horizontal layout */}
+          <div
+            className={`relative w-full transition-all duration-300 ${fading ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
+          >
+            <div
+              className="relative rounded-xl overflow-hidden"
+              style={{
+                boxShadow: `0 8px 32px ${accent}30, 0 2px 8px rgba(0,0,0,0.07)`,
+                border: `1.5px solid ${accent}20`,
+              }}
+            >
+              <img
+                src={b.cover}
+                alt={b.title}
+                className="w-full object-cover"
+                style={{ height: "180px" }}
+              />
+              {/* bottom info strip */}
+              <div className="p-2 border-t bg-white" style={{ borderColor: accent + "15" }}>
+                <p className="text-slate-800 font-black text-xs line-clamp-2 leading-snug">
+                  {b.title}
+                </p>
+                <p className="text-slate-400 text-[10px] mt-0.5">{b.author.join(" | ")}</p>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-[10px] text-slate-400 font-semibold">{b.pages} pages</span>
+                  <span
+                    className="text-[10px] font-black px-2 py-0.5 rounded-full text-white"
+                    style={{ background: accent }}
+                  >
+                    {Math.round((1 - b.price / b.originalPrice) * 100)}% off
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile dot nav */}
+          <div className="flex justify-center gap-2 items-center mt-4 mb-1">
+            {books.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => go(i)}
+                className="rounded-full transition-all duration-300"
+                style={{
+                  width: i === active ? "28px" : "8px",
+                  height: "8px",
+                  background: i === active ? accent : bgMid,
+                  border: i === active ? `1.5px solid ${accent}` : "1.5px solid transparent",
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop — full floating book panel */}
+        <div className="hidden md:flex w-[500px] flex-col items-center justify-center relative">
           <HexBg color={accent} />
 
           {/* Inner glow circle */}
           <div
-            className="absolute w-72 h-72 rounded-full pointer-events-none transition-all duration-700"
+            className="absolute w-96 h-72 rounded-full pointer-events-none transition-all duration-700"
             style={{
               background: bgMid,
               filter: "blur(50px)",
@@ -233,30 +296,46 @@ export default function Home() {
 
             {/* Book */}
             <div
-              className="relative w-56 rounded-3xl overflow-hidden bg-white"
+              className="relative w-96 rounded-2xl overflow-hidden bg-white"
               style={{
                 boxShadow: `0 35px 80px ${accent}40, 0 8px 20px rgba(0,0,0,0.08)`,
               }}
             >
-              <img
-                src={b.cover}
-                alt={b.title}
-                className="w-full object-cover"
-                style={{ height: "340px" }}
-              />
-              <div className="p-4 border-t" style={{ borderColor: accent + "15" }}>
+              <div className="relative">
+                <img
+                  src={b.cover}
+                  alt={b.title}
+                  className="w-full object-cover"
+                  style={{ height: "380px" }}
+                />
+                {/* tag overlay */}
+                <div
+                  className="absolute top-3 left-0 text-[10px] font-black px-3 py-1 text-white rounded-r-full shadow"
+                  style={{ background: accent }}
+                >
+                  {b.tag}
+                </div>
+              </div>
+              <div className="p-3 border-t" style={{ borderColor: accent + "15" }}>
                 <p className="text-slate-800 font-black text-xs line-clamp-2 leading-snug">
                   {b.title}
                 </p>
-                <p className="text-slate-400 text-[10px] mt-1">
-                  {b.pages} pages · {b.isbn.slice(0, 13)}
-                </p>
+                <p className="text-slate-400 text-[10px] mt-0.5">{b.author.join(" | ")}</p>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-[10px] text-slate-400">{b.pages} pages</span>
+                  <span
+                    className="text-[10px] font-black px-2 py-0.5 rounded-full text-white"
+                    style={{ background: accent }}
+                  >
+                    {Math.round((1 - b.price / b.originalPrice) * 100)}% off
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Dot nav */}
-          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 flex gap-2 items-center">
+          {/* Dot nav — centered under the book */}
+          <div className="flex gap-2 items-center mt-5">
             {books.map((_, i) => (
               <button
                 key={i}
@@ -275,26 +354,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-
-        {/* Mobile dot nav */}
-        <div className="flex md:hidden justify-center gap-2 items-center mt-4 mb-2">
-          {books.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => go(i)}
-              className="rounded-full transition-all duration-300"
-              style={{
-                width: i === active ? "28px" : "8px",
-                height: "8px",
-                background: i === active ? accent : bgMid,
-                border:
-                  i === active
-                    ? `1.5px solid ${accent}`
-                    : "1.5px solid transparent",
-              }}
-            />
-          ))}
-        </div>
       </div>
 
       {/* Bottom tray */}
@@ -312,7 +371,7 @@ export default function Home() {
                   <button
                     key={bk.id}
                     onClick={() => go(i)}
-                    className="shrink-0 flex items-center gap-2 px-3 py-3 border-r transition-all"
+                    className="shrink-0 flex items-center gap-2 px-3 py-2 border-r transition-all"
                     style={{
                       borderColor: "rgba(0,0,0,0.05)",
                       background: i === active ? bkC.accentLight + "99" : "transparent",
@@ -409,7 +468,7 @@ export default function Home() {
                   <button
                     key={bk.id}
                     onClick={() => go(i)}
-                    className="flex-1 flex items-center gap-3 px-5 py-4 border-r last:border-0 transition-all"
+                    className="flex-1 flex items-center gap-3 px-3 py-2 border-r last:border-0 transition-all"
                     style={{
                       borderColor: "rgba(0,0,0,0.05)",
                       background: i === active ? bkC.accentLight + "99" : "transparent",

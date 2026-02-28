@@ -1,7 +1,7 @@
 export interface Book {
   id: number;
   title: string;
-  author: string;
+  author: string[];
   price: number;
   originalPrice: number;
   cover: string;
@@ -10,7 +10,6 @@ export interface Book {
   pages: number;
   rating: number;
   tag: string;
-  isbn: string;
   topics: string[];
 }
 
@@ -22,7 +21,7 @@ export const books: Book[] = [
   {
     id: 1,
     title: "The Cell: A Molecular Approach",
-    author: "Geoffrey M. Cooper",
+    author: ["Geoffrey M. Cooper"],
     price: 1850,
     originalPrice: 2400,
     cover: "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=400&q=80",
@@ -32,13 +31,12 @@ export const books: Book[] = [
     pages: 820,
     rating: 4.8,
     tag: "Bestseller",
-    isbn: "978-0878932207",
     topics: ["Cell Structure", "DNA Replication", "Protein Synthesis", "Cell Signaling"],
   },
   {
     id: 2,
     title: "Campbell Biology & Animal Anatomy",
-    author: "Lisa Urry, Michael Cain",
+    author: ["Lisa Urry", "Michael Cain"],
     price: 2200,
     originalPrice: 2900,
     cover: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=400&q=80",
@@ -48,13 +46,12 @@ export const books: Book[] = [
     pages: 1464,
     rating: 4.9,
     tag: "Editor's Pick",
-    isbn: "978-0135188743",
     topics: ["Evolution", "Genetics", "Ecology", "Physiology"],
   },
   {
     id: 3,
     title: "Human Anatomy & Physiology",
-    author: "Elaine N. Marieb",
+    author: ["Elaine N. Marieb"],
     price: 1650,
     originalPrice: 2100,
     cover: "https://images.unsplash.com/photo-1559757175-5700dde675bc?w=400&q=80",
@@ -64,13 +61,12 @@ export const books: Book[] = [
     pages: 1264,
     rating: 4.7,
     tag: "Popular",
-    isbn: "978-0134580999",
     topics: ["Nervous System", "Cardiovascular", "Musculoskeletal", "Homeostasis"],
   },
   {
     id: 4,
     title: "Molecular Biology of the Gene",
-    author: "James D. Watson",
+    author: ["James D. Watson"],
     price: 1980,
     originalPrice: 2600,
     cover: "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=400&q=80",
@@ -80,7 +76,6 @@ export const books: Book[] = [
     pages: 900,
     rating: 4.9,
     tag: "Classic",
-    isbn: "978-0321762436",
     topics: ["Genome", "Gene Expression", "CRISPR", "Epigenetics"],
   },
 ];
