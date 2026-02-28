@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Marquee from "react-fast-marquee";
 import { useRouter } from "next/navigation";
 import { books, fmt } from "@/lib/data";
 import { deriveColors } from "@/lib/colorUtils";
@@ -44,7 +45,7 @@ export default function Home() {
 
       {/* Top-right soft blob */}
       <div
-        className="absolute top-0 right-0 w-[650px] h-[650px] rounded-full pointer-events-none transition-all duration-700"
+        className="absolute top-0 right-0 w-[400px] h-[400px] md:w-[650px] md:h-[650px] rounded-full pointer-events-none transition-all duration-700"
         style={{
           background: `radial-gradient(circle, ${bgMid}cc 0%, transparent 65%)`,
           transform: "translate(25%,-25%)",
@@ -52,7 +53,7 @@ export default function Home() {
       />
       {/* Bottom-left blob */}
       <div
-        className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none transition-all duration-700"
+        className="absolute bottom-0 left-0 w-[250px] h-[250px] md:w-[400px] md:h-[400px] rounded-full pointer-events-none transition-all duration-700"
         style={{
           background: `radial-gradient(circle, ${bgMid}88 0%, transparent 70%)`,
           transform: "translate(-30%,30%)",
@@ -60,7 +61,7 @@ export default function Home() {
       />
 
       {/* NAV */}
-      <nav className="relative z-20 flex items-center justify-between px-10 py-4">
+      <nav className="relative z-20 flex items-center justify-between px-4 sm:px-6 md:px-10 py-4">
         <div className="flex items-center gap-3">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
@@ -77,16 +78,16 @@ export default function Home() {
             Tif<span style={{ color: accent }}>Fin</span>
           </span>
         </div>
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-3 sm:gap-5 md:gap-8">
           <button
             onClick={() => router.push("/book")}
-            className="text-[11px] uppercase tracking-[0.22em] text-slate-400 font-semibold hover:text-slate-700 transition-colors"
+            className="hidden sm:block text-[11px] uppercase tracking-[0.22em] text-slate-400 font-semibold hover:text-slate-700 transition-colors"
           >
             Biology Books
           </button>
           <button
             onClick={() => router.push("/checkout")}
-            className="relative flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
+            className="relative flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
             style={{
               background: accent,
               boxShadow: `0 4px 18px ${accent}45`,
@@ -101,7 +102,7 @@ export default function Home() {
             >
               <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            Cart
+            <span className="hidden sm:inline">Cart</span>
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 w-5 h-5 bg-amber-400 text-slate-900 text-[10px] rounded-full flex items-center justify-center font-black shadow-md">
                 {cartCount}
@@ -112,15 +113,15 @@ export default function Home() {
       </nav>
 
       {/* HERO */}
-      <div className="relative z-10 flex h-[calc(100vh-68px)]">
+      <div className="relative z-10 flex flex-col md:flex-row min-h-[calc(100vh-68px)] pb-44 md:pb-28">
         {/* Left — text */}
-        <div className="flex-1 flex items-center pl-16 pr-6">
+        <div className="flex-1 flex items-center px-4 sm:px-8 md:pl-16 md:pr-6 pt-6 md:pt-0">
           <div
-            className={`transition-all duration-[280ms] ${fading ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"}`}
+            className={`transition-all duration-[280ms] w-full ${fading ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"}`}
           >
             {/* Badge */}
             <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black mb-7 shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black mb-5 shadow-sm"
               style={{
                 background: accentLight,
                 color: accent,
@@ -135,7 +136,7 @@ export default function Home() {
             </div>
 
             <h1
-              className="text-[3.2rem] font-black text-slate-800 leading-[1.1] mb-3 max-w-lg"
+              className="text-3xl sm:text-4xl md:text-[3.2rem] font-black text-slate-800 leading-[1.1] mb-3 max-w-lg"
               style={{ fontFamily: "'Georgia',serif" }}
             >
               {b.title}
@@ -145,11 +146,11 @@ export default function Home() {
               <span className="text-slate-700 font-bold">{b.author}</span>
             </p>
             <Stars rating={b.rating} />
-            <p className="text-slate-500 text-sm leading-relaxed max-w-md mt-5 mb-6">
+            <p className="text-slate-500 text-sm leading-relaxed max-w-md mt-4 mb-5">
               {b.description}
             </p>
 
-            <div className="flex flex-wrap gap-2 mb-9">
+            <div className="flex flex-wrap gap-2 mb-6">
               {b.topics.map((t) => (
                 <span
                   key={t}
@@ -165,13 +166,13 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-4">
               <div>
                 <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-0.5">
                   Price
                 </p>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-black" style={{ color: accent }}>
+                  <span className="text-3xl sm:text-4xl font-black" style={{ color: accent }}>
                     {fmt(b.price)}
                   </span>
                   <span className="text-slate-400 line-through text-sm">
@@ -181,7 +182,7 @@ export default function Home() {
               </div>
               <button
                 onClick={() => router.push(`/book/${b.id}`)}
-                className="px-9 py-4 rounded-full font-black text-sm text-white transition-all hover:scale-105 active:scale-95 shadow-xl"
+                className="px-7 sm:px-9 py-3.5 sm:py-4 rounded-full font-black text-sm text-white transition-all hover:scale-105 active:scale-95 shadow-xl"
                 style={{
                   background: accent,
                   boxShadow: `0 10px 30px ${accent}50`,
@@ -191,7 +192,7 @@ export default function Home() {
               </button>
               <button
                 onClick={() => router.push("/book")}
-                className="px-7 py-4 rounded-full font-black text-sm transition-all hover:scale-105 active:scale-95 border-2"
+                className="px-6 sm:px-7 py-3.5 sm:py-4 rounded-full font-black text-sm transition-all hover:scale-105 active:scale-95 border-2"
                 style={{
                   borderColor: accent,
                   color: accent,
@@ -204,8 +205,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right — floating book */}
-        <div className="w-[500px] flex items-center justify-center relative">
+        {/* Right — floating book (hidden on small screens, shown on md+) */}
+        <div className="hidden md:flex w-[500px] items-center justify-center relative">
           <HexBg color={accent} />
 
           {/* Inner glow circle */}
@@ -274,6 +275,26 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+        {/* Mobile dot nav */}
+        <div className="flex md:hidden justify-center gap-2 items-center mt-4 mb-2">
+          {books.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => go(i)}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: i === active ? "28px" : "8px",
+                height: "8px",
+                background: i === active ? accent : bgMid,
+                border:
+                  i === active
+                    ? `1.5px solid ${accent}`
+                    : "1.5px solid transparent",
+              }}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Bottom tray */}
@@ -281,47 +302,139 @@ export default function Home() {
         className="absolute bottom-0 left-0 right-0 z-20 bg-white/85 backdrop-blur-lg border-t shadow-2xl"
         style={{ borderColor: "rgba(0,0,0,0.06)" }}
       >
-        <div className="flex">
-          {books.map((bk, i) => {
-            const bkC = deriveColors(bk.color);
-            return (
-              <button
-                key={bk.id}
-                onClick={() => go(i)}
-                className="flex-1 flex items-center gap-3 px-5 py-4 border-r last:border-0 transition-all"
-                style={{
-                  borderColor: "rgba(0,0,0,0.05)",
-                  background: i === active ? bkC.accentLight + "99" : "transparent",
-                }}
-              >
-                <img
-                  src={bk.cover}
-                  alt={bk.title}
-                  className="w-10 h-14 object-cover rounded-lg shadow-sm shrink-0"
-                  style={{
-                    outline: i === active ? `2px solid ${bkC.accent}` : "none",
-                  }}
-                />
-                <div className="text-left">
-                  <p className="text-xs font-bold text-slate-700 leading-tight line-clamp-2">
-                    {bk.title}
-                  </p>
-                  <p
-                    className="text-xs mt-1 font-black"
-                    style={{ color: i === active ? bkC.accent : "#94a3b8" }}
+        {/* Mobile tray: marquee if > 2, else normal flex */}
+        <div className="md:hidden overflow-hidden">
+          {books.length > 2 ? (
+            <Marquee speed={40} gradient={false}>
+              {books.map((bk, i) => {
+                const bkC = deriveColors(bk.color);
+                return (
+                  <button
+                    key={bk.id}
+                    onClick={() => go(i)}
+                    className="shrink-0 flex items-center gap-2 px-3 py-3 border-r transition-all"
+                    style={{
+                      borderColor: "rgba(0,0,0,0.05)",
+                      background: i === active ? bkC.accentLight + "99" : "transparent",
+                      minWidth: "140px",
+                    }}
                   >
-                    {fmt(bk.price)}
-                  </p>
-                </div>
-                {i === active && (
-                  <div
-                    className="ml-auto w-2 h-2 rounded-full shrink-0 animate-pulse"
-                    style={{ background: bkC.accent }}
-                  />
-                )}
-              </button>
-            );
-          })}
+                    <img
+                      src={bk.cover}
+                      alt={bk.title}
+                      className="w-8 h-11 object-cover rounded-lg shadow-sm shrink-0"
+                      style={{ outline: i === active ? `2px solid ${bkC.accent}` : "none" }}
+                    />
+                    <div className="text-left">
+                      <p className="text-[11px] font-bold text-slate-700 leading-tight line-clamp-2">{bk.title}</p>
+                      <p className="text-[11px] mt-0.5 font-black" style={{ color: i === active ? bkC.accent : "#94a3b8" }}>
+                        {fmt(bk.price)}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </Marquee>
+          ) : (
+            <div className="flex">
+              {books.map((bk, i) => {
+                const bkC = deriveColors(bk.color);
+                return (
+                  <button
+                    key={bk.id}
+                    onClick={() => go(i)}
+                    className="flex-1 flex items-center gap-2 px-3 py-3 border-r last:border-0 transition-all"
+                    style={{
+                      borderColor: "rgba(0,0,0,0.05)",
+                      background: i === active ? bkC.accentLight + "99" : "transparent",
+                    }}
+                  >
+                    <img
+                      src={bk.cover}
+                      alt={bk.title}
+                      className="w-8 h-11 object-cover rounded-lg shadow-sm shrink-0"
+                      style={{ outline: i === active ? `2px solid ${bkC.accent}` : "none" }}
+                    />
+                    <div className="text-left">
+                      <p className="text-[11px] font-bold text-slate-700 leading-tight line-clamp-2">{bk.title}</p>
+                      <p className="text-[11px] mt-0.5 font-black" style={{ color: i === active ? bkC.accent : "#94a3b8" }}>
+                        {fmt(bk.price)}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop tray: marquee if > 5, else normal flex */}
+        <div className="hidden md:block overflow-hidden">
+          {books.length > 5 ? (
+            <Marquee speed={40} gradient={false}>
+              {books.map((bk, i) => {
+                const bkC = deriveColors(bk.color);
+                return (
+                  <button
+                    key={bk.id}
+                    onClick={() => go(i)}
+                    className="shrink-0 flex items-center gap-3 px-5 py-4 border-r transition-all"
+                    style={{
+                      borderColor: "rgba(0,0,0,0.05)",
+                      background: i === active ? bkC.accentLight + "99" : "transparent",
+                      minWidth: "200px",
+                    }}
+                  >
+                    <img
+                      src={bk.cover}
+                      alt={bk.title}
+                      className="w-10 h-14 object-cover rounded-lg shadow-sm shrink-0"
+                      style={{ outline: i === active ? `2px solid ${bkC.accent}` : "none" }}
+                    />
+                    <div className="text-left">
+                      <p className="text-xs font-bold text-slate-700 leading-tight line-clamp-2">{bk.title}</p>
+                      <p className="text-xs mt-1 font-black" style={{ color: i === active ? bkC.accent : "#94a3b8" }}>
+                        {fmt(bk.price)}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </Marquee>
+          ) : (
+            <div className="flex">
+              {books.map((bk, i) => {
+                const bkC = deriveColors(bk.color);
+                return (
+                  <button
+                    key={bk.id}
+                    onClick={() => go(i)}
+                    className="flex-1 flex items-center gap-3 px-5 py-4 border-r last:border-0 transition-all"
+                    style={{
+                      borderColor: "rgba(0,0,0,0.05)",
+                      background: i === active ? bkC.accentLight + "99" : "transparent",
+                    }}
+                  >
+                    <img
+                      src={bk.cover}
+                      alt={bk.title}
+                      className="w-10 h-14 object-cover rounded-lg shadow-sm shrink-0"
+                      style={{ outline: i === active ? `2px solid ${bkC.accent}` : "none" }}
+                    />
+                    <div className="text-left">
+                      <p className="text-xs font-bold text-slate-700 leading-tight line-clamp-2">{bk.title}</p>
+                      <p className="text-xs mt-1 font-black" style={{ color: i === active ? bkC.accent : "#94a3b8" }}>
+                        {fmt(bk.price)}
+                      </p>
+                    </div>
+                    {i === active && (
+                      <div className="ml-auto w-2 h-2 rounded-full shrink-0 animate-pulse" style={{ background: bkC.accent }} />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

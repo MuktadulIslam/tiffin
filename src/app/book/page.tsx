@@ -26,7 +26,7 @@ export default function BooksPage() {
       />
 
       {/* Nav */}
-      <nav className="relative z-20 flex items-center justify-between px-10 py-4">
+      <nav className="relative z-20 flex items-center justify-between px-4 sm:px-6 md:px-10 py-4">
         <button
           onClick={() => router.push("/")}
           className="flex items-center gap-3"
@@ -46,16 +46,16 @@ export default function BooksPage() {
             Tif<span style={{ color: accent }}>Fin</span>
           </span>
         </button>
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-3 sm:gap-5 md:gap-8">
           <span
-            className="text-[11px] uppercase tracking-[0.22em] font-black"
+            className="hidden sm:inline text-[11px] uppercase tracking-[0.22em] font-black"
             style={{ color: accent }}
           >
             Biology Books
           </span>
           <button
             onClick={() => router.push("/checkout")}
-            className="relative flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
+            className="relative flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
             style={{ background: accent, boxShadow: `0 4px 18px ${accent}45` }}
           >
             <svg
@@ -78,12 +78,12 @@ export default function BooksPage() {
       </nav>
 
       {/* Header */}
-      <div className="relative z-10 max-w-6xl mx-auto px-10 pt-10 pb-6">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-10 pt-8 md:pt-10 pb-6">
         <p className="text-xs uppercase tracking-[0.2em] font-black mb-2" style={{ color: accent }}>
           All Titles
         </p>
         <h1
-          className="text-4xl font-black text-slate-800 mb-1"
+          className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-800 mb-1"
           style={{ fontFamily: "'Georgia',serif" }}
         >
           Biology Books
@@ -91,8 +91,78 @@ export default function BooksPage() {
         <p className="text-slate-400 text-sm">{books.length} books available</p>
       </div>
 
-      {/* Grid */}
-      <div className="relative z-10 max-w-6xl mx-auto px-10 pb-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Mobile: horizontal scroll info-bar style */}
+      <div className="relative z-10 sm:hidden px-4 pb-20">
+        <div className="flex gap-3 overflow-x-auto pb-3" style={{ scrollbarWidth: "none" }}>
+          <style>{`.hide-scroll::-webkit-scrollbar{display:none}`}</style>
+          {books.map((bk) => {
+            const c = deriveColors(bk.color);
+            const discount = Math.round((1 - bk.price / bk.originalPrice) * 100);
+            return (
+              <div
+                key={bk.id}
+                onClick={() => router.push(`/book/${bk.id}`)}
+                className="flex-shrink-0 w-48 cursor-pointer bg-white rounded-2xl overflow-hidden shadow-md border border-black/5 active:scale-95 transition-transform"
+              >
+                {/* Cover */}
+                <div className="relative overflow-hidden" style={{ background: c.bgMid, height: "160px" }}>
+                  <img
+                    src={bk.cover}
+                    alt={bk.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div
+                    className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-black text-white shadow"
+                    style={{ background: c.accent }}
+                  >
+                    -{discount}%
+                  </div>
+                  <div
+                    className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-black shadow"
+                    style={{ background: c.accentLight, color: c.accent }}
+                  >
+                    {bk.tag}
+                  </div>
+                </div>
+
+                {/* Info bar body */}
+                <div className="p-3">
+                  <h2 className="text-slate-800 font-black text-xs leading-snug line-clamp-2 mb-0.5">
+                    {bk.title}
+                  </h2>
+                  <p className="text-slate-400 text-[10px] mb-1.5">by {bk.author}</p>
+                  <Stars rating={bk.rating} />
+                  <div className="flex items-baseline gap-1.5 mt-2 mb-2.5">
+                    <span className="text-base font-black" style={{ color: c.accent }}>
+                      {fmt(bk.price)}
+                    </span>
+                    <span className="text-slate-300 line-through text-[10px]">
+                      {fmt(bk.originalPrice)}
+                    </span>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCart((prev) => {
+                        const ex = prev.find((ci) => ci.id === bk.id);
+                        if (ex) return prev.map((ci) => ci.id === bk.id ? { ...ci, qty: ci.qty + 1 } : ci);
+                        return [...prev, { ...bk, qty: 1 }];
+                      });
+                    }}
+                    className="w-full py-1.5 rounded-full text-[11px] font-black text-white shadow-md"
+                    style={{ background: c.accent }}
+                  >
+                    + Add to Cart
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Desktop: grid */}
+      <div className="relative z-10 hidden sm:grid max-w-6xl mx-auto px-4 sm:px-6 md:px-10 pb-20 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {books.map((bk) => {
           const c = deriveColors(bk.color);
           const discount = Math.round((1 - bk.price / bk.originalPrice) * 100);
@@ -112,14 +182,12 @@ export default function BooksPage() {
                   alt={bk.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                {/* Discount badge */}
                 <div
                   className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-black text-white shadow"
                   style={{ background: c.accent }}
                 >
                   -{discount}%
                 </div>
-                {/* Tag badge */}
                 <div
                   className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-black shadow"
                   style={{ background: c.accentLight, color: c.accent }}

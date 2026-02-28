@@ -26,6 +26,7 @@ export default function Checkout() {
   const [bkashTxn, setBkashTxn] = useState("");
   const [step, setStep] = useState(1);
   const [placed, setPlaced] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
 
   const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
   const shipping = 80;
@@ -44,7 +45,7 @@ export default function Checkout() {
         style={{ background: "#f0faf4" }}
       >
         <LeafBg color={G} />
-        <div className="relative z-10 text-center max-w-md w-full bg-white rounded-3xl p-12 shadow-2xl border border-green-100 mx-4">
+        <div className="relative z-10 text-center max-w-md w-full bg-white rounded-3xl p-8 sm:p-12 shadow-2xl border border-green-100 mx-4">
           <div
             className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6"
             style={{
@@ -65,7 +66,7 @@ export default function Checkout() {
             </svg>
           </div>
           <h2
-            className="text-3xl font-black text-slate-800 mb-3"
+            className="text-2xl sm:text-3xl font-black text-slate-800 mb-3"
             style={{ fontFamily: "'Georgia',serif" }}
           >
             Order Placed! 🎉
@@ -111,7 +112,7 @@ export default function Checkout() {
       <HexBg color={G} />
 
       {/* Nav */}
-      <nav className="relative z-20 flex items-center justify-between px-10 py-4">
+      <nav className="relative z-20 flex items-center justify-between px-4 sm:px-6 md:px-10 py-4">
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors font-semibold"
@@ -128,24 +129,66 @@ export default function Checkout() {
           Back
         </button>
         <span
-          className="text-base font-black text-slate-800"
+          className="text-sm sm:text-base font-black text-slate-800"
           style={{ fontFamily: "'Georgia',serif" }}
         >
-          BioLit<span style={{ color: G }}>Store</span> — Checkout
+          BioLit<span style={{ color: G }}>Store</span>
+          <span className="hidden sm:inline"> — Checkout</span>
         </span>
-        <div />
+        {/* Mobile summary toggle */}
+        <button
+          className="flex md:hidden items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full border"
+          style={{ borderColor: G, color: G, background: GL }}
+          onClick={() => setShowSummary((s) => !s)}
+        >
+          {fmt(grand)} {showSummary ? "▲" : "▼"}
+        </button>
+        <div className="hidden md:block" />
       </nav>
 
+      {/* Mobile order summary drawer */}
+      {showSummary && (
+        <div className="relative z-20 md:hidden mx-4 mb-2 bg-white rounded-2xl shadow-lg border border-black/5 p-4">
+          <h3 className="font-black text-slate-800 mb-3 text-sm">Order Summary</h3>
+          {cart.length === 0 ? (
+            <p className="text-xs text-slate-400 text-center py-3">No items yet</p>
+          ) : (
+            cart.map((c) => (
+              <div key={c.id} className="flex gap-3 mb-3 pb-3 border-b border-black/5 last:border-0">
+                <img src={c.cover} alt={c.title} className="w-10 rounded-lg object-cover shadow-sm shrink-0" style={{ height: "56px" }} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-slate-700 line-clamp-2 leading-snug">{c.title}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Qty: {c.qty}</p>
+                </div>
+                <span className="text-xs font-black self-end shrink-0" style={{ color: c.color }}>{fmt(c.price * c.qty)}</span>
+              </div>
+            ))
+          )}
+          <div className="border-t border-black/5 pt-3 space-y-1.5">
+            <div className="flex justify-between text-sm text-slate-400">
+              <span>Subtotal</span><span className="font-semibold">{fmt(total)}</span>
+            </div>
+            <div className="flex justify-between text-sm text-slate-400">
+              <span>Shipping</span><span className="font-semibold">{fmt(shipping)}</span>
+            </div>
+            <div className="flex justify-between text-base font-black border-t border-black/5 pt-2">
+              <span className="text-slate-800">Total</span>
+              <span style={{ color: G }}>{fmt(grand)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Steps */}
-      <div className="relative z-10 flex justify-center items-center py-7 gap-0">
+      <div className="relative z-10 flex justify-center items-center py-5 md:py-7 gap-0 overflow-x-auto px-4">
         {steps.map((s, i) => (
           <div key={s} className="flex items-center">
             <button
               onClick={() => i < step - 1 && setStep(i + 1)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-1.5 sm:gap-2"
             >
               <span
-                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-all shadow-sm"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-black transition-all shadow-sm"
                 style={{
                   background: i < step ? G : i === step - 1 ? GL : "#f1f5f9",
                   color: i < step ? "#fff" : i === step - 1 ? G : "#94a3b8",
@@ -155,14 +198,14 @@ export default function Checkout() {
                 {i < step - 1 ? "✓" : i + 1}
               </span>
               <span
-                className={`text-xs font-bold ${i === step - 1 ? "text-slate-700" : "text-slate-400"}`}
+                className={`text-xs font-bold ${i === step - 1 ? "text-slate-700" : "text-slate-400"} hidden sm:inline`}
               >
                 {s}
               </span>
             </button>
             {i < steps.length - 1 && (
               <div
-                className="w-10 h-0.5 mx-2 transition-colors"
+                className="w-6 sm:w-10 h-0.5 mx-1 sm:mx-2 transition-colors"
                 style={{ background: i < step - 1 ? G : "#e2e8f0" }}
               />
             )}
@@ -170,15 +213,15 @@ export default function Checkout() {
         ))}
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-8 pb-16 flex gap-8">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pb-16 flex flex-col md:flex-row gap-6 md:gap-8">
         {/* Main */}
-        <div className="flex-1">
-          <div className="bg-white rounded-2xl shadow-sm border border-black/5 p-7">
+        <div className="flex-1 min-w-0">
+          <div className="bg-white rounded-2xl shadow-sm border border-black/5 p-5 md:p-7">
             {/* STEP 1 */}
             {step === 1 && (
               <>
                 <h2
-                  className="text-xl font-black text-slate-800 mb-6"
+                  className="text-lg sm:text-xl font-black text-slate-800 mb-6"
                   style={{ fontFamily: "'Georgia',serif" }}
                 >
                   Your Cart
@@ -200,18 +243,18 @@ export default function Checkout() {
                     {cart.map((c) => (
                       <div
                         key={c.id}
-                        className="flex gap-4 p-4 rounded-2xl border border-black/5 bg-slate-50/60 hover:border-black/10 transition-all"
+                        className="flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border border-black/5 bg-slate-50/60 hover:border-black/10 transition-all"
                       >
                         <img
                           src={c.cover}
                           alt={c.title}
-                          className="w-14 rounded-xl object-cover shrink-0 shadow-sm"
-                          style={{ height: "80px" }}
+                          className="w-12 sm:w-14 rounded-xl object-cover shrink-0 shadow-sm"
+                          style={{ height: "72px" }}
                         />
-                        <div className="flex-1">
-                          <h3 className="font-black text-slate-800 text-sm">{c.title}</h3>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-black text-slate-800 text-sm line-clamp-2">{c.title}</h3>
                           <p className="text-xs text-slate-400 mt-0.5">{c.author}</p>
-                          <div className="flex items-center gap-3 mt-3">
+                          <div className="flex flex-wrap items-center gap-2 mt-3">
                             <div className="flex items-center gap-2 border border-black/10 rounded-full px-3 py-1 bg-white shadow-sm">
                               <button
                                 onClick={() => updateQty(c.id, -1)}
@@ -260,12 +303,12 @@ export default function Checkout() {
             {step === 2 && (
               <>
                 <h2
-                  className="text-xl font-black text-slate-800 mb-6"
+                  className="text-lg sm:text-xl font-black text-slate-800 mb-6"
                   style={{ fontFamily: "'Georgia',serif" }}
                 >
                   Delivery Information
                 </h2>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     { label: "Full Name", key: "name", type: "text", placeholder: "Your full name", full: true },
                     { label: "Phone Number", key: "phone", type: "tel", placeholder: "01XXXXXXXXX" },
@@ -273,7 +316,7 @@ export default function Checkout() {
                     { label: "Full Address", key: "address", type: "text", placeholder: "House, Road, Area...", full: true },
                     { label: "Order Note (Optional)", key: "note", type: "text", placeholder: "Any special instructions", full: true },
                   ].map(({ label, key, type, placeholder, full }) => (
-                    <div key={key} className={full ? "col-span-2" : ""}>
+                    <div key={key} className={full ? "sm:col-span-2" : ""}>
                       <label className="text-xs font-black text-slate-500 mb-1.5 block uppercase tracking-wide">
                         {label}
                       </label>
@@ -300,7 +343,7 @@ export default function Checkout() {
                 <div className="flex gap-3 mt-6">
                   <button
                     onClick={() => setStep(1)}
-                    className="px-6 py-3 rounded-full border border-black/10 text-sm text-slate-600 hover:bg-slate-50 font-bold"
+                    className="px-5 sm:px-6 py-3 rounded-full border border-black/10 text-sm text-slate-600 hover:bg-slate-50 font-bold"
                   >
                     ← Back
                   </button>
@@ -320,7 +363,7 @@ export default function Checkout() {
             {step === 3 && (
               <>
                 <h2
-                  className="text-xl font-black text-slate-800 mb-6"
+                  className="text-lg sm:text-xl font-black text-slate-800 mb-6"
                   style={{ fontFamily: "'Georgia',serif" }}
                 >
                   Payment Method
@@ -329,26 +372,26 @@ export default function Checkout() {
                   {/* COD */}
                   <button
                     onClick={() => setPayment("cod")}
-                    className="w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition-all text-left"
+                    className="w-full flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-2xl border-2 transition-all text-left"
                     style={{
                       borderColor: payment === "cod" ? G : "#e2e8f0",
                       background: payment === "cod" ? GL : "#fafafa",
                     }}
                   >
                     <div
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0 shadow-sm"
+                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0 shadow-sm"
                       style={{ background: "#ecfdf5", border: "1px solid #d1fae5" }}
                     >
                       💵
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <p className="font-black text-slate-800">Cash on Delivery</p>
                       <p className="text-xs text-slate-400 mt-0.5">
                         Pay in cash when your books arrive at your door
                       </p>
                     </div>
                     <div
-                      className="ml-auto w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                      className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
                       style={{ borderColor: payment === "cod" ? G : "#cbd5e1" }}
                     >
                       {payment === "cod" && (
@@ -360,26 +403,26 @@ export default function Checkout() {
                   {/* bKash */}
                   <button
                     onClick={() => setPayment("bkash")}
-                    className="w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition-all text-left"
+                    className="w-full flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-2xl border-2 transition-all text-left"
                     style={{
                       borderColor: payment === "bkash" ? "#d72660" : "#e2e8f0",
                       background: payment === "bkash" ? "#fff7fa" : "#fafafa",
                     }}
                   >
                     <div
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-md"
+                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-md"
                       style={{ background: "#d72660" }}
                     >
                       <span className="text-white font-black text-[11px] tracking-tight">bKash</span>
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <p className="font-black text-slate-800">bKash Mobile Banking</p>
                       <p className="text-xs text-slate-400 mt-0.5">
                         Bangladesh&apos;s #1 mobile payment platform
                       </p>
                     </div>
                     <div
-                      className="ml-auto w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                      className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
                       style={{ borderColor: payment === "bkash" ? "#d72660" : "#cbd5e1" }}
                     >
                       {payment === "bkash" && (
@@ -390,17 +433,17 @@ export default function Checkout() {
                 </div>
 
                 {payment === "bkash" && (
-                  <div className="p-5 rounded-2xl border border-pink-200 bg-pink-50 mb-6">
-                    <div className="flex items-center gap-4 mb-4 pb-4 border-b border-pink-100">
+                  <div className="p-4 sm:p-5 rounded-2xl border border-pink-200 bg-pink-50 mb-6">
+                    <div className="flex items-center gap-3 sm:gap-4 mb-4 pb-4 border-b border-pink-100">
                       <div
-                        className="w-14 h-14 rounded-2xl shadow-md flex items-center justify-center shrink-0"
+                        className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl shadow-md flex items-center justify-center shrink-0"
                         style={{ background: "#d72660" }}
                       >
                         <span className="text-white font-black text-[11px]">bKash</span>
                       </div>
                       <div>
                         <p className="text-xs font-bold text-slate-500 mb-0.5">Send Payment To</p>
-                        <p className="text-2xl font-black text-[#d72660]">01XXXXXXXXX</p>
+                        <p className="text-xl sm:text-2xl font-black text-[#d72660]">01XXXXXXXXX</p>
                       </div>
                     </div>
                     <p className="text-xs text-slate-500 mb-4">
@@ -441,7 +484,7 @@ export default function Checkout() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setStep(2)}
-                    className="px-6 py-3 rounded-full border border-black/10 text-sm text-slate-600 hover:bg-slate-50 font-bold"
+                    className="px-5 sm:px-6 py-3 rounded-full border border-black/10 text-sm text-slate-600 hover:bg-slate-50 font-bold"
                   >
                     ← Back
                   </button>
@@ -461,7 +504,7 @@ export default function Checkout() {
             {step === 4 && (
               <>
                 <h2
-                  className="text-xl font-black text-slate-800 mb-6"
+                  className="text-lg sm:text-xl font-black text-slate-800 mb-6"
                   style={{ fontFamily: "'Georgia',serif" }}
                 >
                   Review & Confirm
@@ -516,13 +559,13 @@ export default function Checkout() {
                     {cart.map((c) => (
                       <div
                         key={c.id}
-                        className="flex justify-between items-center py-2 border-b border-black/5 last:border-0"
+                        className="flex justify-between items-center py-2 border-b border-black/5 last:border-0 gap-2"
                       >
-                        <span className="text-sm text-slate-700 font-medium">
+                        <span className="text-sm text-slate-700 font-medium line-clamp-1 flex-1">
                           {c.title}{" "}
                           <span className="text-slate-400">×{c.qty}</span>
                         </span>
-                        <span className="text-sm font-black" style={{ color: c.color }}>
+                        <span className="text-sm font-black shrink-0" style={{ color: c.color }}>
                           {fmt(c.price * c.qty)}
                         </span>
                       </div>
@@ -532,7 +575,7 @@ export default function Checkout() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setStep(3)}
-                    className="px-6 py-3 rounded-full border border-black/10 text-sm text-slate-600 hover:bg-slate-50 font-bold"
+                    className="px-5 sm:px-6 py-3 rounded-full border border-black/10 text-sm text-slate-600 hover:bg-slate-50 font-bold"
                   >
                     ← Back
                   </button>
@@ -549,8 +592,8 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* Sidebar */}
-        <div className="w-72 shrink-0">
+        {/* Sidebar — desktop only */}
+        <div className="hidden md:block w-72 shrink-0">
           <div className="sticky top-8 bg-white rounded-2xl shadow-md border border-black/5 p-5">
             <h3 className="font-black text-slate-800 mb-4 text-base">Order Summary</h3>
             {cart.length === 0 ? (
