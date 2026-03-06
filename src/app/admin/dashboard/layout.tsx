@@ -75,7 +75,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
       )}
       <aside className={`fixed lg:sticky top-0 z-40 w-64 shrink-0 bg-white border-r border-slate-100 flex flex-col h-screen transition-transform duration-200 ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}>
       {/* Logo */}
-      <div className="p-6 border-b border-slate-100">
+      <div className="p-3 border-b border-slate-100">
         <Link href="/admin/dashboard" className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center shadow-sm">
             <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
@@ -89,7 +89,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 p-4 flex flex-col gap-1 overflow-y-auto">
+      <nav className="flex-1 p-2 flex flex-col gap-1 overflow-y-auto">
         {visibleLinks.map((link) => {
           const active = pathname === link.href || (link.href !== "/admin/dashboard" && pathname.startsWith(link.href));
           return (
@@ -111,8 +111,8 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
       </nav>
 
       {/* User */}
-      <div className="p-4 border-t border-slate-100">
-        <div className="flex items-center gap-3 px-3 py-2 mb-2">
+      <div className="p-2 border-t border-slate-100">
+        <div className="flex items-center gap-3 px-3 py-2">
           <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
             <span className="text-emerald-700 font-black text-sm">
               {admin?.name?.charAt(0).toUpperCase()}
@@ -125,6 +125,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
             </p>
           </div>
         </div>
+        <div className="w-full h-px bg-gray-800"></div>
         <button
           onClick={logout}
           className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all"
