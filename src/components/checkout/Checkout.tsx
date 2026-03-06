@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { tr, fmtBn, toBnDigits, fromBnDigits } from "@/lib/bn";
+import { tr, fmtBn, toBnDigits } from "@/lib/bn";
 import { deriveColors } from "@/lib/colorUtils";
 import { useCart } from "@/context/CartContext";
 import LeafBg from "@/components/ui/LeafBg";
@@ -344,9 +344,9 @@ export default function Checkout() {
                       <input
                         type={type}
                         placeholder={placeholder}
-                        value={key === "phone" ? toBnDigits(form[key as keyof typeof form]) : form[key as keyof typeof form]}
+                        value={form[key as keyof typeof form]}
                         onChange={(e) =>
-                          setForm((p) => ({ ...p, [key]: key === "phone" ? fromBnDigits(e.target.value) : e.target.value }))
+                          setForm((p) => ({ ...p, [key]: e.target.value }))
                         }
                         className={inputCls}
                         onFocus={(e) => {
