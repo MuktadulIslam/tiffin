@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { fmt } from "@/lib/data";
+import { tr, fmtBn, toBnDigits, fromBnDigits } from "@/lib/bn";
 import { deriveColors } from "@/lib/colorUtils";
 import { useCart } from "@/context/CartContext";
 import LeafBg from "@/components/ui/LeafBg";
@@ -69,25 +69,25 @@ export default function Checkout() {
             className="text-2xl sm:text-3xl font-black text-slate-800 mb-3"
             style={{ fontFamily: "'Georgia',serif" }}
           >
-            Order Placed! 🎉
+            {tr("Order Placed!")} 🎉
           </h2>
           <p className="text-slate-500 mb-7 text-sm leading-relaxed">
-            Thank you,{" "}
+            {tr("Thank you,")}{" "}
             <span className="text-slate-800 font-bold">
-              {form.name || "Biology Enthusiast"}
+              {form.name || tr("Biology Enthusiast")}
             </span>
-            ! Your books will arrive soon. Happy reading! 📚
+            {tr("! Your books will arrive soon. Happy reading!")} 📚
           </p>
           {payment === "bkash" && (
             <div className="p-4 rounded-xl bg-pink-50 border border-pink-100 mb-6 text-sm text-left">
-              <p className="text-[#d72660] font-black mb-1">bKash Payment Confirmed</p>
+              <p className="text-[#d72660] font-black mb-1">{tr("bKash Payment Confirmed")}</p>
               <p className="text-slate-400 text-xs">
-                TrxID:{" "}
+                {tr("TrxID:")}{" "}
                 <span className="text-slate-700 font-bold">{bkashTxn}</span>
               </p>
               <p className="text-slate-400 text-xs">
-                Amount:{" "}
-                <span className="text-slate-700 font-bold">{fmt(grand)}</span>
+                {tr("Amount:")}{" "}
+                <span className="text-slate-700 font-bold">{fmtBn(grand)}</span>
               </p>
             </div>
           )}
@@ -96,13 +96,13 @@ export default function Checkout() {
             className="px-10 py-3.5 rounded-full font-black text-white hover:scale-105 transition-all shadow-xl"
             style={{ background: G, boxShadow: `0 8px 28px ${G}45` }}
           >
-            Continue Shopping →
+            {tr("Continue Shopping →")}
           </button>
         </div>
       </div>
     );
 
-  const steps = ["Cart", "Info", "Payment", "Confirm"];
+  const steps = [tr("Cart"), tr("Info"), tr("Payment"), tr("Confirm")];
 
   const inputCls =
     "w-full bg-slate-50 border border-black/10 rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-300 focus:outline-none transition-all";
@@ -126,14 +126,14 @@ export default function Checkout() {
           >
             <path d="M19 12H5m7-7l-7 7 7 7" />
           </svg>
-          Back
+          {tr("Back")}
         </button>
         <span
           className="text-sm sm:text-base font-black text-slate-800"
           style={{ fontFamily: "'Georgia',serif" }}
         >
           BioLit<span style={{ color: G }}>Store</span>
-          <span className="hidden sm:inline"> — Checkout</span>
+          <span className="hidden sm:inline">{tr("— Checkout")}</span>
         </span>
         {/* Mobile summary toggle */}
         <button
@@ -141,7 +141,7 @@ export default function Checkout() {
           style={{ borderColor: G, color: G, background: GL }}
           onClick={() => setShowSummary((s) => !s)}
         >
-          {fmt(grand)} {showSummary ? "▲" : "▼"}
+          {fmtBn(grand)} {showSummary ? "▲" : "▼"}
         </button>
         <div className="hidden md:block" />
       </nav>
@@ -149,31 +149,31 @@ export default function Checkout() {
       {/* Mobile order summary drawer */}
       {showSummary && (
         <div className="relative z-20 md:hidden mx-4 mb-2 bg-white rounded-2xl shadow-lg border border-black/5 p-4">
-          <h3 className="font-black text-slate-800 mb-3 text-sm">Order Summary</h3>
+          <h3 className="font-black text-slate-800 mb-3 text-sm">{tr("Order Summary")}</h3>
           {cart.length === 0 ? (
-            <p className="text-xs text-slate-400 text-center py-3">No items yet</p>
+            <p className="text-xs text-slate-400 text-center py-3">{tr("No items yet")}</p>
           ) : (
             cart.map((c) => (
               <div key={c.id} className="flex gap-3 mb-3 pb-3 border-b border-black/5 last:border-0">
                 <img src={c.cover} alt={c.title} className="w-10 rounded-lg object-cover shadow-sm shrink-0" style={{ height: "56px" }} />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold text-slate-700 line-clamp-2 leading-snug">{c.title}</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">Qty: {c.qty}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{tr("Qty:")} {toBnDigits(c.qty)}</p>
                 </div>
-                <span className="text-xs font-black self-end shrink-0" style={{ color: c.color }}>{fmt(c.price * c.qty)}</span>
+                <span className="text-xs font-black self-end shrink-0" style={{ color: c.color }}>{fmtBn(c.price * c.qty)}</span>
               </div>
             ))
           )}
           <div className="border-t border-black/5 pt-3 space-y-1.5">
             <div className="flex justify-between text-sm text-slate-400">
-              <span>Subtotal</span><span className="font-semibold">{fmt(total)}</span>
+              <span>{tr("Subtotal")}</span><span className="font-semibold">{fmtBn(total)}</span>
             </div>
             <div className="flex justify-between text-sm text-slate-400">
-              <span>Shipping</span><span className="font-semibold">{fmt(shipping)}</span>
+              <span>{tr("Shipping")}</span><span className="font-semibold">{fmtBn(shipping)}</span>
             </div>
             <div className="flex justify-between text-base font-black border-t border-black/5 pt-2">
-              <span className="text-slate-800">Total</span>
-              <span style={{ color: G }}>{fmt(grand)}</span>
+              <span className="text-slate-800">{tr("Total")}</span>
+              <span style={{ color: G }}>{fmtBn(grand)}</span>
             </div>
           </div>
         </div>
@@ -224,18 +224,18 @@ export default function Checkout() {
                   className="text-lg sm:text-xl font-black text-slate-800 mb-6"
                   style={{ fontFamily: "'Georgia',serif" }}
                 >
-                  Your Cart
+                  {tr("Your Cart")}
                 </h2>
                 {cart.length === 0 ? (
                   <div className="text-center py-16 text-slate-400">
                     <p className="text-5xl mb-4">📚</p>
-                    <p className="font-semibold">Your cart is empty</p>
+                    <p className="font-semibold">{tr("Your cart is empty")}</p>
                     <button
                       onClick={() => router.push("/book")}
                       className="mt-4 px-7 py-2.5 rounded-full text-white font-bold text-sm shadow-lg"
                       style={{ background: G }}
                     >
-                      Browse Books
+                      {tr("Browse Books")}
                     </button>
                   </div>
                 ) : (
@@ -273,13 +273,13 @@ export default function Checkout() {
                               </button>
                             </div>
                             <span className="text-sm font-black" style={{ color: c.color }}>
-                              {fmt(c.price * c.qty)}
+                              {fmtBn(c.price * c.qty)}
                             </span>
                             <button
                               onClick={() => remove(c.id)}
                               className="ml-auto text-xs text-red-400 hover:text-red-600 font-bold"
                             >
-                              Remove
+                              {tr("Remove")}
                             </button>
                           </div>
                         </div>
@@ -293,7 +293,7 @@ export default function Checkout() {
                     className="mt-6 w-full py-4 rounded-full text-white font-black hover:scale-[1.02] transition-all shadow-xl"
                     style={{ background: G, boxShadow: `0 8px 25px ${G}45` }}
                   >
-                    Proceed to Delivery Info →
+                    {tr("Proceed to Delivery Info →")}
                   </button>
                 )}
               </>
@@ -306,15 +306,15 @@ export default function Checkout() {
                   className="text-lg sm:text-xl font-black text-slate-800 mb-6"
                   style={{ fontFamily: "'Georgia',serif" }}
                 >
-                  Delivery Information
+                  {tr("Delivery Information")}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    { label: "Full Name", key: "name", type: "text", placeholder: "Your full name", full: true },
-                    { label: "Phone Number", key: "phone", type: "tel", placeholder: "01XXXXXXXXX" },
-                    { label: "City", key: "city", type: "text", placeholder: "Dhaka" },
-                    { label: "Full Address", key: "address", type: "text", placeholder: "House, Road, Area...", full: true },
-                    { label: "Order Note (Optional)", key: "note", type: "text", placeholder: "Any special instructions", full: true },
+                    { label: tr("Full Name"), key: "name", type: "text", placeholder: tr("Your full name"), full: true },
+                    { label: tr("Phone Number"), key: "phone", type: "tel", placeholder: "01XXXXXXXXX" },
+                    { label: tr("City"), key: "city", type: "text", placeholder: "ঢাকা" },
+                    { label: tr("Full Address"), key: "address", type: "text", placeholder: tr("House, Road, Area..."), full: true },
+                    { label: tr("Order Note (Optional)"), key: "note", type: "text", placeholder: tr("Any special instructions"), full: true },
                   ].map(({ label, key, type, placeholder, full }) => (
                     <div key={key} className={full ? "sm:col-span-2" : ""}>
                       <label className="text-xs font-black text-slate-500 mb-1.5 block uppercase tracking-wide">
@@ -323,9 +323,9 @@ export default function Checkout() {
                       <input
                         type={type}
                         placeholder={placeholder}
-                        value={form[key as keyof typeof form]}
+                        value={key === "phone" ? toBnDigits(form[key as keyof typeof form]) : form[key as keyof typeof form]}
                         onChange={(e) =>
-                          setForm((p) => ({ ...p, [key]: e.target.value }))
+                          setForm((p) => ({ ...p, [key]: key === "phone" ? fromBnDigits(e.target.value) : e.target.value }))
                         }
                         className={inputCls}
                         onFocus={(e) => {
@@ -345,7 +345,7 @@ export default function Checkout() {
                     onClick={() => setStep(1)}
                     className="px-5 sm:px-6 py-3 rounded-full border border-black/10 text-sm text-slate-600 hover:bg-slate-50 font-bold"
                   >
-                    ← Back
+                    {tr("← Back")}
                   </button>
                   <button
                     onClick={() => setStep(3)}
@@ -353,7 +353,7 @@ export default function Checkout() {
                     className="flex-1 py-3 rounded-full text-white font-black hover:scale-[1.02] transition-all shadow-xl disabled:opacity-40 disabled:cursor-not-allowed"
                     style={{ background: G }}
                   >
-                    Proceed to Payment →
+                    {tr("Proceed to Payment →")}
                   </button>
                 </div>
               </>
@@ -366,7 +366,7 @@ export default function Checkout() {
                   className="text-lg sm:text-xl font-black text-slate-800 mb-6"
                   style={{ fontFamily: "'Georgia',serif" }}
                 >
-                  Payment Method
+                  {tr("Payment Method")}
                 </h2>
                 <div className="space-y-3 mb-6">
                   {/* COD */}
@@ -385,9 +385,9 @@ export default function Checkout() {
                       💵
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-black text-slate-800">Cash on Delivery</p>
+                      <p className="font-black text-slate-800">{tr("Cash on Delivery")}</p>
                       <p className="text-xs text-slate-400 mt-0.5">
-                        Pay in cash when your books arrive at your door
+                        {tr("Pay in cash when your books arrive at your door")}
                       </p>
                     </div>
                     <div
@@ -416,9 +416,9 @@ export default function Checkout() {
                       <span className="text-white font-black text-[11px] tracking-tight">bKash</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-black text-slate-800">bKash Mobile Banking</p>
+                      <p className="font-black text-slate-800">{tr("bKash Mobile Banking")}</p>
                       <p className="text-xs text-slate-400 mt-0.5">
-                        Bangladesh&apos;s #1 mobile payment platform
+                        {tr("Bangladesh's #1 mobile payment platform")}
                       </p>
                     </div>
                     <div
@@ -442,20 +442,19 @@ export default function Checkout() {
                         <span className="text-white font-black text-[11px]">bKash</span>
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-slate-500 mb-0.5">Send Payment To</p>
+                        <p className="text-xs font-bold text-slate-500 mb-0.5">{tr("Send Payment To")}</p>
                         <p className="text-xl sm:text-2xl font-black text-[#d72660]">01XXXXXXXXX</p>
                       </div>
                     </div>
                     <p className="text-xs text-slate-500 mb-4">
-                      Send{" "}
-                      <span className="font-black text-slate-800">{fmt(grand)}</span>{" "}
-                      to the number above via bKash app, then fill in the details below to confirm
-                      your order.
+                      {tr("Send")}{" "}
+                      <span className="font-black text-slate-800">{fmtBn(grand)}</span>{" "}
+                      {tr("to the number above via bKash app, then fill in the details below to confirm your order.")}
                     </p>
                     <div className="space-y-3">
                       <div>
                         <label className="text-xs font-black text-slate-500 mb-1.5 block uppercase tracking-wide">
-                          Your bKash Number
+                          {tr("Your bKash Number")}
                         </label>
                         <input
                           type="tel"
@@ -467,7 +466,7 @@ export default function Checkout() {
                       </div>
                       <div>
                         <label className="text-xs font-black text-slate-500 mb-1.5 block uppercase tracking-wide">
-                          Transaction ID (TrxID)
+                          {tr("Transaction ID (TrxID)")}
                         </label>
                         <input
                           type="text"
@@ -486,7 +485,7 @@ export default function Checkout() {
                     onClick={() => setStep(2)}
                     className="px-5 sm:px-6 py-3 rounded-full border border-black/10 text-sm text-slate-600 hover:bg-slate-50 font-bold"
                   >
-                    ← Back
+                    {tr("← Back")}
                   </button>
                   <button
                     onClick={() => setStep(4)}
@@ -494,7 +493,7 @@ export default function Checkout() {
                     className="flex-1 py-3 rounded-full font-black text-sm text-white transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed shadow-xl"
                     style={{ background: payment === "bkash" ? "#d72660" : G }}
                   >
-                    Review Order →
+                    {tr("Review Order →")}
                   </button>
                 </div>
               </>
@@ -507,12 +506,12 @@ export default function Checkout() {
                   className="text-lg sm:text-xl font-black text-slate-800 mb-6"
                   style={{ fontFamily: "'Georgia',serif" }}
                 >
-                  Review & Confirm
+                  {tr("Review & Confirm")}
                 </h2>
                 <div className="space-y-3 mb-6">
                   {[
                     {
-                      title: "Delivery To",
+                      title: tr("Delivery To"),
                       content: (
                         <>
                           <p className="font-black text-slate-800 text-sm">{form.name}</p>
@@ -521,21 +520,21 @@ export default function Checkout() {
                             {form.address}, {form.city}
                           </p>
                           {form.note && (
-                            <p className="text-xs text-slate-400 mt-1">Note: {form.note}</p>
+                            <p className="text-xs text-slate-400 mt-1">{tr("Note:")} {form.note}</p>
                           )}
                         </>
                       ),
                     },
                     {
-                      title: "Payment",
+                      title: tr("Payment"),
                       content: (
                         <>
                           <p className="font-black text-slate-800 text-sm">
-                            {payment === "cod" ? "💵 Cash on Delivery" : "bKash Mobile Banking"}
+                            {payment === "cod" ? `💵 ${tr("Cash on Delivery")}` : tr("bKash Mobile Banking")}
                           </p>
                           {payment === "bkash" && (
                             <p className="text-xs text-slate-400">
-                              From: {bkashNum} · TrxID: {bkashTxn}
+                              {tr("From:")} {bkashNum} · {tr("TrxID:")} {bkashTxn}
                             </p>
                           )}
                         </>
@@ -554,7 +553,7 @@ export default function Checkout() {
                   ))}
                   <div className="p-4 rounded-2xl bg-slate-50 border border-black/5">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">
-                      Books Ordered
+                      {tr("Books Ordered")}
                     </p>
                     {cart.map((c) => (
                       <div
@@ -566,7 +565,7 @@ export default function Checkout() {
                           <span className="text-slate-400">×{c.qty}</span>
                         </span>
                         <span className="text-sm font-black shrink-0" style={{ color: c.color }}>
-                          {fmt(c.price * c.qty)}
+                          {fmtBn(c.price * c.qty)}
                         </span>
                       </div>
                     ))}
@@ -577,14 +576,14 @@ export default function Checkout() {
                     onClick={() => setStep(3)}
                     className="px-5 sm:px-6 py-3 rounded-full border border-black/10 text-sm text-slate-600 hover:bg-slate-50 font-bold"
                   >
-                    ← Back
+                    {tr("← Back")}
                   </button>
                   <button
                     onClick={() => setPlaced(true)}
                     className="flex-1 py-4 rounded-full text-white font-black hover:scale-[1.02] transition-all shadow-xl"
                     style={{ background: G, boxShadow: `0 8px 28px ${G}48` }}
                   >
-                    ✓ Place Order — {fmt(grand)}
+                    ✓ Place Order — {fmtBn(grand)}
                   </button>
                 </div>
               </>
@@ -595,9 +594,9 @@ export default function Checkout() {
         {/* Sidebar — desktop only */}
         <div className="hidden md:block w-72 shrink-0">
           <div className="sticky top-8 bg-white rounded-2xl shadow-md border border-black/5 p-5">
-            <h3 className="font-black text-slate-800 mb-4 text-base">Order Summary</h3>
+            <h3 className="font-black text-slate-800 mb-4 text-base">{tr("Order Summary")}</h3>
             {cart.length === 0 ? (
-              <p className="text-xs text-slate-400 text-center py-5">No items yet</p>
+              <p className="text-xs text-slate-400 text-center py-5">{tr("No items yet")}</p>
             ) : (
               cart.map((c) => (
                 <div
@@ -614,36 +613,36 @@ export default function Checkout() {
                     <p className="text-xs font-bold text-slate-700 line-clamp-2 leading-snug">
                       {c.title}
                     </p>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Qty: {c.qty}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">{tr("Qty:")} {toBnDigits(c.qty)}</p>
                   </div>
                   <span
                     className="text-xs font-black self-end shrink-0"
                     style={{ color: c.color }}
                   >
-                    {fmt(c.price * c.qty)}
+                    {fmtBn(c.price * c.qty)}
                   </span>
                 </div>
               ))
             )}
             <div className="border-t border-black/5 pt-3 mt-1 space-y-2">
               <div className="flex justify-between text-sm text-slate-400">
-                <span>Subtotal</span>
-                <span className="font-semibold">{fmt(total)}</span>
+                <span>{tr("Subtotal")}</span>
+                <span className="font-semibold">{fmtBn(total)}</span>
               </div>
               <div className="flex justify-between text-sm text-slate-400">
-                <span>Shipping</span>
-                <span className="font-semibold">{fmt(shipping)}</span>
+                <span>{tr("Shipping")}</span>
+                <span className="font-semibold">{fmtBn(shipping)}</span>
               </div>
               <div className="flex justify-between text-base font-black border-t border-black/5 pt-2 mt-1">
-                <span className="text-slate-800">Total</span>
-                <span style={{ color: G }}>{fmt(grand)}</span>
+                <span className="text-slate-800">{tr("Total")}</span>
+                <span style={{ color: G }}>{fmtBn(grand)}</span>
               </div>
             </div>
             <div
               className="mt-4 p-3 rounded-xl text-xs text-center font-bold"
               style={{ background: GL, color: G, border: `1px solid ${G}25` }}
             >
-              🌿 Free shipping on orders above ৳3,000
+              🌿 {tr("Free shipping on orders above ৳3,000")}
             </div>
           </div>
         </div>

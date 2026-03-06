@@ -66,6 +66,16 @@ function getAdminModel(): Model<IAdmin> {
 
 // ─── Book Model ────────────────────────────────────────────────────────────────
 
+export interface IChapterTopic {
+  title: string;
+}
+
+export interface IChapter {
+  title: string;
+  order: number;
+  topics?: IChapterTopic[];
+}
+
 export interface IBook extends Document {
   title: string;
   author: string[];
@@ -78,10 +88,27 @@ export interface IBook extends Document {
   rating: number;
   tag: string;
   topics: string[];
-  isbn?: string;
+  publisher?: string;
+  edition?: string;
+  version?: string;
+  chapters?: IChapter[];
   createdAt: Date;
   updatedAt: Date;
 }
+
+const ChapterTopicSchema = new Schema<IChapterTopic>(
+  { title: { type: String, required: true, trim: true } },
+  { _id: false }
+);
+
+const ChapterSchema = new Schema<IChapter>(
+  {
+    title: { type: String, required: true, trim: true },
+    order: { type: Number, required: true, default: 0 },
+    topics: [ChapterTopicSchema],
+  },
+  { _id: false }
+);
 
 const BookSchema = new Schema<IBook>(
   {
@@ -96,7 +123,10 @@ const BookSchema = new Schema<IBook>(
     rating: { type: Number, required: true, min: 0, max: 5 },
     tag: { type: String, required: true, default: "New" },
     topics: [{ type: String }],
-    isbn: { type: String, trim: true },
+    publisher: { type: String, trim: true },
+    edition: { type: String, trim: true },
+    version: { type: String, trim: true },
+    chapters: [ChapterSchema],
   },
   { timestamps: true }
 );
@@ -270,7 +300,7 @@ export async function dbCreateBook(data: Partial<IBook>) {
 export async function dbUpdateBook(id: string, data: Partial<IBook>) {
   await connectDB();
   const Book = getBookModel();
-  return Book.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+  return Book.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true });
 }
 
 export async function dbDeleteBook(id: string) {

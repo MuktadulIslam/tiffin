@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Marquee from "react-fast-marquee";
 import { useRouter } from "next/navigation";
-import { fmt } from "@/lib/data";
+import { tr, fmtBn } from "@/lib/bn";
 import { deriveColors } from "@/lib/colorUtils";
 import { useCart } from "@/context/CartContext";
 import LeafBg from "@/components/ui/LeafBg";
@@ -71,7 +71,7 @@ export default function Home() {
   if (books.length === 0) {
     return (
       <div className="h-screen flex items-center justify-center bg-slate-50">
-        <p className="text-slate-500 text-lg font-semibold">No books available at the moment.</p>
+        <p className="text-slate-500 text-lg font-semibold">{tr("No books available at the moment.")}</p>
       </div>
     );
   }
@@ -125,7 +125,7 @@ export default function Home() {
               onClick={() => router.push("/book")}
               className="hidden sm:block text-[11px] uppercase tracking-[0.22em] text-slate-400 font-semibold hover:text-slate-700 transition-colors"
             >
-              Biology Books
+              {tr("Biology Books")}
             </button>
             <button
               onClick={() => router.push("/checkout")}
@@ -144,7 +144,7 @@ export default function Home() {
               >
                 <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <span className="hidden sm:inline">Cart</span>
+              <span className="hidden sm:inline">{tr("Cart")}</span>
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 w-5 h-5 bg-amber-400 text-slate-900 text-[10px] rounded-full flex items-center justify-center font-black shadow-md">
                   {cartCount}
@@ -184,7 +184,7 @@ export default function Home() {
                 {b.title}
               </h1>
               <p className="text-slate-500 text-sm mb-1">
-                by{" "}
+                {tr("by")}{" "}
                 <span className="text-slate-700 font-bold">{b.author.join(" | ")}</span>
               </p>
               <Stars rating={b.rating} />
@@ -211,20 +211,20 @@ export default function Home() {
               <div className="flex flex-wrap items-center gap-4">
                 <div>
                   <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold mb-0.5">
-                    Price
+                    {tr("Price")}
                   </p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-3xl sm:text-4xl font-black" style={{ color: accent }}>
-                      {fmt(b.price)}
+                      {fmtBn(b.price)}
                     </span>
                     <span className="text-slate-400 line-through text-sm">
-                      {fmt(b.originalPrice)}
+                      {fmtBn(b.originalPrice)}
                     </span>
                     <span
                       className="text-xs font-black px-2 py-0.5 rounded-full text-white"
                       style={{ background: accent }}
                     >
-                      {Math.round((1 - b.price / b.originalPrice) * 100)}% off
+                      {tr("Up to")} {Math.round((1 - b.price / b.originalPrice) * 100)}% {tr("off")}
                     </span>
                   </div>
                 </div>
@@ -236,7 +236,7 @@ export default function Home() {
                     boxShadow: `0 10px 30px ${accent}50`,
                   }}
                 >
-                  View Details →
+                  {tr("View Details →")}
                 </button>
                 <button
                   onClick={() => router.push("/book")}
@@ -247,7 +247,7 @@ export default function Home() {
                     background: accentLight,
                   }}
                 >
-                  Browse Books
+                  {tr("Browse Books")}
                 </button>
               </div>
             </div>
@@ -280,12 +280,12 @@ export default function Home() {
                   </p>
                   <p className="text-slate-400 text-[10px] mt-0.5">{b.author.join(" | ")}</p>
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-[10px] text-slate-400 font-semibold">{b.pages} pages</span>
+                    <span className="text-[10px] text-slate-400 font-semibold">{b.pages} {tr("pages")}</span>
                     <span
                       className="text-[10px] font-black px-2 py-0.5 rounded-full text-white"
                       style={{ background: accent }}
                     >
-                      {Math.round((1 - b.price / b.originalPrice) * 100)}% off
+                      {Math.round((1 - b.price / b.originalPrice) * 100)}% {tr("off")}
                     </span>
                   </div>
                 </div>
@@ -364,12 +364,12 @@ export default function Home() {
                   </p>
                   <p className="text-slate-400 text-[10px] mt-0.5">{b.author.join(" | ")}</p>
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-[10px] text-slate-400">{b.pages} pages</span>
+                    <span className="text-[10px] text-slate-400">{b.pages} {tr("pages")}</span>
                     <span
                       className="text-[10px] font-black px-2 py-0.5 rounded-full text-white"
                       style={{ background: accent }}
                     >
-                      {Math.round((1 - b.price / b.originalPrice) * 100)}% off
+                      {Math.round((1 - b.price / b.originalPrice) * 100)}% {tr("off")}
                     </span>
                   </div>
                 </div>
@@ -430,7 +430,7 @@ export default function Home() {
                     <div className="text-left">
                       <p className="text-[11px] font-bold text-slate-700 leading-tight line-clamp-2">{bk.title}</p>
                       <p className="text-[11px] mt-0.5 font-black" style={{ color: i === active ? bkC.accent : "#94a3b8" }}>
-                        {fmt(bk.price)}
+                        {fmtBn(bk.price)}
                       </p>
                     </div>
                   </button>
@@ -460,7 +460,7 @@ export default function Home() {
                     <div className="text-left">
                       <p className="text-[11px] font-bold text-slate-700 leading-tight line-clamp-2">{bk.title}</p>
                       <p className="text-[11px] mt-0.5 font-black" style={{ color: i === active ? bkC.accent : "#94a3b8" }}>
-                        {fmt(bk.price)}
+                        {fmtBn(bk.price)}
                       </p>
                     </div>
                   </button>
@@ -496,7 +496,7 @@ export default function Home() {
                     <div className="text-left">
                       <p className="text-xs font-bold text-slate-700 leading-tight line-clamp-2">{bk.title}</p>
                       <p className="text-xs mt-1 font-black" style={{ color: i === active ? bkC.accent : "#94a3b8" }}>
-                        {fmt(bk.price)}
+                        {fmtBn(bk.price)}
                       </p>
                     </div>
                   </button>
@@ -526,7 +526,7 @@ export default function Home() {
                     <div className="text-left">
                       <p className="text-xs font-bold text-slate-700 leading-tight line-clamp-2">{bk.title}</p>
                       <p className="text-xs mt-1 font-black" style={{ color: i === active ? bkC.accent : "#94a3b8" }}>
-                        {fmt(bk.price)}
+                        {fmtBn(bk.price)}
                       </p>
                     </div>
                     {i === active && (

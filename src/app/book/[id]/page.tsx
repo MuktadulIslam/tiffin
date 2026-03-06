@@ -4,6 +4,16 @@ import { use, useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import SingleBook from "@/components/book/SingleBook";
 
+interface ChapterTopic {
+  title: string;
+}
+
+interface Chapter {
+  title: string;
+  order: number;
+  topics?: ChapterTopic[];
+}
+
 interface Book {
   _id: string;
   title: string;
@@ -17,7 +27,10 @@ interface Book {
   rating: number;
   tag: string;
   topics: string[];
-  isbn?: string;
+  publisher?: string;
+  edition?: string;
+  version?: string;
+  chapters?: Chapter[];
 }
 
 export default function BookPage({ params }: { params: Promise<{ id: string }> }) {

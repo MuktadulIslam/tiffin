@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { fmt } from "@/lib/data";
+import { tr, fmtBn, toBnDigits } from "@/lib/bn";
 import { deriveColors } from "@/lib/colorUtils";
 import { useCart } from "@/context/CartContext";
 import Stars from "@/components/ui/Stars";
@@ -67,7 +67,7 @@ export default function BooksPage() {
           </button>
           <div className="flex items-center gap-3 sm:gap-5 md:gap-8">
             <span className="hidden sm:inline text-[11px] uppercase tracking-[0.22em] font-black" style={{ color: accent }}>
-              Biology Books
+              {tr("Biology Books")}
             </span>
             <button
               onClick={() => router.push("/checkout")}
@@ -77,7 +77,7 @@ export default function BooksPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                 <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              Cart
+              {tr("Cart")}
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 w-5 h-5 bg-amber-400 text-slate-900 text-[10px] rounded-full flex items-center justify-center font-black shadow-md">
                   {cartCount}
@@ -91,7 +91,7 @@ export default function BooksPage() {
         <div className="relative z-10 max-w-6xl mx-auto px-0 sm:px-6 md:px-10 pt-6 md:pt-12 pb-6">
           <div className="inline-flex items-center gap-2 mb-4">
             <span className="px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.2em] font-black" style={{ background: accentLight, color: accent }}>
-              All Titles
+              {tr("All Titles")}
             </span>
             <span className="h-px w-8 rounded-full" style={{ background: accent, opacity: 0.35 }} />
           </div>
@@ -100,19 +100,19 @@ export default function BooksPage() {
               <div className="flex items-center gap-3 md:mb-2">
                 <span className="block w-1 h-8 rounded-full" style={{ background: accent }} />
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800 leading-tight" style={{ fontFamily: "'Georgia',serif" }}>
-                  Biology <span style={{ color: accent }}>Books</span>
+                  জীববিজ্ঞান <span style={{ color: accent }}>বই</span>
                 </h1>
               </div>
               <p className="text-slate-400 text-sm pl-4">
-                Curated collection of {books.length} top-rated titles
+                {tr("Curated collection of")} {toBnDigits(books.length)} {tr("top-rated titles")}
               </p>
             </div>
             {books.length > 0 && (
               <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                 {[
-                  { label: "Titles", value: books.length },
-                  { label: "Avg Rating", value: (books.reduce((s, b) => s + b.rating, 0) / books.length).toFixed(1) },
-                  { label: "Discounts", value: `Up to ${Math.max(...books.map((b) => Math.round((1 - b.price / b.originalPrice) * 100)))}%` },
+                  { label: tr("Titles"), value: toBnDigits(books.length) },
+                  { label: tr("Avg Rating"), value: toBnDigits((books.reduce((s, b) => s + b.rating, 0) / books.length).toFixed(1)) },
+                  { label: tr("Discounts"), value: `${tr("Up to")} ${toBnDigits(Math.max(...books.map((b) => Math.round((1 - b.price / b.originalPrice) * 100))))}%` },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex flex-col items-center px-4 py-2 rounded-2xl min-w-18" style={{ background: accentLight }}>
                     <span className="text-base font-black" style={{ color: accent }}>{value}</span>
@@ -130,7 +130,7 @@ export default function BooksPage() {
           </div>
         ) : books.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-slate-400 text-lg font-semibold">No books available yet.</p>
+            <p className="text-slate-400 text-lg font-semibold">{tr("No books available yet.")}</p>
           </div>
         ) : (
           <div className="relative grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 py-5">
@@ -155,7 +155,7 @@ export default function BooksPage() {
 
                   <div className="p-5">
                     <h2 className="text-slate-800 font-black text-sm leading-snug mb-1 line-clamp-2">{bk.title}</h2>
-                    <p className="text-slate-400 text-xs mb-2">by {bk.author.join(", ")}</p>
+                    <p className="text-slate-400 text-xs mb-2">{tr("by")} {bk.author.join(", ")}</p>
                     <Stars rating={bk.rating} />
                     <p className="text-slate-400 text-xs leading-relaxed mt-3 mb-4 line-clamp-2">{bk.description}</p>
 
@@ -170,8 +170,8 @@ export default function BooksPage() {
 
                     <div className="pt-3 border-t border-black/5">
                       <div className="flex items-baseline gap-1.5 mb-3">
-                        <span className="text-lg font-black" style={{ color: c.accent }}>{fmt(bk.price)}</span>
-                        <span className="text-slate-300 line-through text-xs">{fmt(bk.originalPrice)}</span>
+                        <span className="text-lg font-black" style={{ color: c.accent }}>{fmtBn(bk.price)}</span>
+                        <span className="text-slate-300 line-through text-xs">{fmtBn(bk.originalPrice)}</span>
                       </div>
                       <div className="flex gap-2">
                         <button
@@ -186,14 +186,14 @@ export default function BooksPage() {
                           className="flex-1 py-2 rounded-full text-xs font-black text-white transition-all hover:scale-105 active:scale-95 shadow-md"
                           style={{ background: c.accent, boxShadow: `0 4px 14px ${c.accent}40` }}
                         >
-                          + Add to Cart
+                          {tr("+ Add to Cart")}
                         </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); router.push(`/book/${bk._id}`); }}
                           className="px-4 py-2 rounded-full text-xs font-black border-2 transition-all hover:scale-105 active:scale-95"
                           style={{ borderColor: c.accent, color: c.accent, background: c.accentLight }}
                         >
-                          View →
+                          {tr("View →")}
                         </button>
                       </div>
                     </div>

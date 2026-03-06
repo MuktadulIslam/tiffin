@@ -1,3 +1,13 @@
+export interface ChapterTopic {
+  title: string;
+}
+
+export interface Chapter {
+  title: string;
+  order: number;
+  topics?: ChapterTopic[];
+}
+
 // CartItem uses string id (MongoDB _id)
 export interface CartItem {
   id: string;
@@ -12,7 +22,10 @@ export interface CartItem {
   rating: number;
   tag: string;
   topics: string[];
-  isbn?: string;
+  publisher?: string;
+  edition?: string;
+  version?: string;
+  chapters?: Chapter[];
   qty: number;
 }
 
