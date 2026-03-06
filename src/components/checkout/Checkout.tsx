@@ -253,7 +253,7 @@ export default function Checkout() {
                     <p className="font-semibold">{tr("Your cart is empty")}</p>
                     <button
                       onClick={() => router.push("/book")}
-                      className="mt-4 px-7 py-2.5 rounded-full text-white font-bold text-sm shadow-lg"
+                      className="mt-4 px-7 py-2.5 rounded-full text-white font-bold text-sm shadow-lg cursor-pointer"
                       style={{ background: G }}
                     >
                       {tr("Browse Books")}
@@ -646,13 +646,13 @@ export default function Checkout() {
               ))
             )}
             <div className="border-t border-black/5 pt-3 mt-1 space-y-2">
-              <div className="flex justify-between text-sm text-slate-400">
+              <div className="flex justify-between text-sm text-slate-400 font-black">
                 <span>{tr("Subtotal")}</span>
-                <span className="font-semibold">{fmtBn(total)}</span>
+                <span className="">{fmtBn(total)}</span>
               </div>
-              <div className="flex justify-between text-sm text-slate-400">
+              <div className="flex justify-between text-xs text-slate-400 font-black">
                 <span>{tr("Shipping")}</span>
-                <span className="font-semibold">{fmtBn(shipping)}</span>
+                <span className="">{fmtBn(shipping)}</span>
               </div>
               <div className="flex justify-between text-base font-black border-t border-black/5 pt-2 mt-1">
                 <span className="text-slate-800">{tr("Total")}</span>
