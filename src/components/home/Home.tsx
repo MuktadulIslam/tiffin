@@ -3,18 +3,44 @@
 import { useState, useEffect } from "react";
 import Marquee from "react-fast-marquee";
 import { useRouter } from "next/navigation";
-import { books, fmt } from "@/lib/data";
+import { fmt } from "@/lib/data";
 import { deriveColors } from "@/lib/colorUtils";
 import { useCart } from "@/context/CartContext";
 import LeafBg from "@/components/ui/LeafBg";
 import HexBg from "@/components/ui/HexBg";
 import Stars from "@/components/ui/Stars";
 
+interface Book {
+  _id: string;
+  title: string;
+  author: string[];
+  price: number;
+  originalPrice: number;
+  cover: string;
+  color: string;
+  description: string;
+  pages: number;
+  rating: number;
+  tag: string;
+  topics: string[];
+  isbn?: string;
+}
+
 export default function Home() {
   const router = useRouter();
   const { cartCount } = useCart();
+  const [books, setBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
   const [active, setActive] = useState(0);
   const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/books")
+      .then((r) => r.json())
+      .then((d) => setBooks(d.books ?? []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   const go = (i: number) => {
     if (fading || i === active) return;
@@ -26,12 +52,29 @@ export default function Home() {
   };
 
   useEffect(() => {
+    if (books.length === 0) return;
     const t = setInterval(
       () => setActive((p) => (p + 1) % books.length),
       5200,
     );
     return () => clearInterval(t);
-  }, []);
+  }, [books.length]);
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-50">
+        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (books.length === 0) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-slate-500 text-lg font-semibold">No books available at the moment.</p>
+      </div>
+    );
+  }
 
   const b = books[active];
   const { accent, accentLight, bgMid, bgLight } = deriveColors(b.color);
@@ -186,7 +229,7 @@ export default function Home() {
                   </div>
                 </div>
                 <button
-                  onClick={() => router.push(`/book/${b.id}`)}
+                  onClick={() => router.push(`/book/${b._id}`)}
                   className="px-7 sm:px-9 py-3.5 sm:py-4 rounded-full font-black text-sm text-white transition-all hover:scale-105 active:scale-95 shadow-xl"
                   style={{
                     background: accent,
@@ -369,7 +412,7 @@ export default function Home() {
                 const bkC = deriveColors(bk.color);
                 return (
                   <button
-                    key={bk.id}
+                    key={bk._id}
                     onClick={() => go(i)}
                     className="shrink-0 flex items-center gap-2 px-3 py-2 border-r transition-all"
                     style={{
@@ -400,7 +443,7 @@ export default function Home() {
                 const bkC = deriveColors(bk.color);
                 return (
                   <button
-                    key={bk.id}
+                    key={bk._id}
                     onClick={() => go(i)}
                     className="flex-1 flex items-center gap-2 px-3 py-3 border-r last:border-0 transition-all"
                     style={{
@@ -435,7 +478,7 @@ export default function Home() {
                 const bkC = deriveColors(bk.color);
                 return (
                   <button
-                    key={bk.id}
+                    key={bk._id}
                     onClick={() => go(i)}
                     className="shrink-0 flex items-center gap-3 px-5 py-4 border-r transition-all"
                     style={{
@@ -466,7 +509,7 @@ export default function Home() {
                 const bkC = deriveColors(bk.color);
                 return (
                   <button
-                    key={bk.id}
+                    key={bk._id}
                     onClick={() => go(i)}
                     className="flex-1 flex items-center gap-3 px-3 py-2 border-r last:border-0 transition-all"
                     style={{

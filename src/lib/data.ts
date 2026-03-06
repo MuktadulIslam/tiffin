@@ -1,5 +1,6 @@
-export interface Book {
-  id: number;
+// CartItem uses string id (MongoDB _id)
+export interface CartItem {
+  id: string;
   title: string;
   author: string[];
   price: number;
@@ -11,73 +12,8 @@ export interface Book {
   rating: number;
   tag: string;
   topics: string[];
-}
-
-export interface CartItem extends Book {
+  isbn?: string;
   qty: number;
 }
-
-export const books: Book[] = [
-  {
-    id: 1,
-    title: "The Cell: A Molecular Approach",
-    author: ["Geoffrey M. Cooper"],
-    price: 1850,
-    originalPrice: 2400,
-    cover: "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=400&q=80",
-    color: "#1e7e3e",
-    description:
-      "A comprehensive journey into the molecular machinery of life. Discover DNA, proteins, and the exquisite complexity of cellular biology.",
-    pages: 820,
-    rating: 4.8,
-    tag: "Bestseller",
-    topics: ["Cell Structure", "DNA Replication", "Protein Synthesis", "Cell Signaling"],
-  },
-  {
-    id: 2,
-    title: "Campbell Biology & Animal Anatomy",
-    author: ["Lisa Urry", "Michael Cain"],
-    price: 2200,
-    originalPrice: 2900,
-    cover: "https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=400&q=80",
-    color: "#1558b0",
-    description:
-      "The gold standard in biology education. From atoms to ecosystems, this book weaves together life's grand tapestry with stunning clarity.",
-    pages: 1464,
-    rating: 4.9,
-    tag: "Editor's Pick",
-    topics: ["Evolution", "Genetics", "Ecology", "Physiology"],
-  },
-  {
-    id: 3,
-    title: "Human Anatomy & Physiology",
-    author: ["Elaine N. Marieb"],
-    price: 1650,
-    originalPrice: 2100,
-    cover: "https://images.unsplash.com/photo-1559757175-5700dde675bc?w=400&q=80",
-    color: "#b03020",
-    description:
-      "Explore the breathtaking architecture of the human body. From neurons firing to hearts beating—life revealed in magnificent detail.",
-    pages: 1264,
-    rating: 4.7,
-    tag: "Popular",
-    topics: ["Nervous System", "Cardiovascular", "Musculoskeletal", "Homeostasis"],
-  },
-  {
-    id: 4,
-    title: "Molecular Biology of the Gene",
-    author: ["James D. Watson"],
-    price: 1980,
-    originalPrice: 2600,
-    cover: "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=400&q=80",
-    color: "#5235a0",
-    description:
-      "Written by the co-discoverer of DNA's double helix. The definitive text on gene expression, regulation, and the secrets hidden in our genome.",
-    pages: 900,
-    rating: 4.9,
-    tag: "Classic",
-    topics: ["Genome", "Gene Expression", "CRISPR", "Epigenetics"],
-  },
-];
 
 export const fmt = (n: number) => "৳" + n.toLocaleString("en-BD");

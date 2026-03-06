@@ -32,11 +32,11 @@ export default function Checkout() {
   const shipping = 80;
   const grand = total + shipping;
 
-  const updateQty = (id: number, d: number) =>
+  const updateQty = (id: string, d: number) =>
     setCart((p) =>
       p.map((c) => (c.id === id ? { ...c, qty: Math.max(1, c.qty + d) } : c)),
     );
-  const remove = (id: number) => setCart((p) => p.filter((c) => c.id !== id));
+  const remove = (id: string) => setCart((p) => p.filter((c) => c.id !== id));
 
   if (placed)
     return (

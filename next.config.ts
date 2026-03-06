@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
+  serverExternalPackages: ["mongoose", "bcryptjs", "src/lib/db.proxy"],
 };
 
 export default nextConfig;
