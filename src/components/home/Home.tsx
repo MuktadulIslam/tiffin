@@ -9,6 +9,7 @@ import { useCart } from "@/context/CartContext";
 import LeafBg from "@/components/ui/LeafBg";
 import HexBg from "@/components/ui/HexBg";
 import Stars from "@/components/ui/Stars";
+import Link from "next/link";
 
 interface Book {
   _id: string;
@@ -38,7 +39,7 @@ export default function Home() {
     fetch("/api/books")
       .then((r) => r.json())
       .then((d) => setBooks(d.books ?? []))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, []);
 
@@ -103,8 +104,8 @@ export default function Home() {
 
       <div className="w-full flex-1 max-w-350 mx-auto flex flex-col py-2 px-4 min-h-0 overflow-y-auto">
         {/* NAV */}
-        <nav className="relative z-20 flex items-center justify-between p-2">
-          <div className="flex items-center gap-3">
+        <nav className="relative z-20 flex items-center justify-between px-2 pb-2">
+          <a href="/" className="flex items-center gap-3">
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
               style={{ background: accentLight }}
@@ -119,16 +120,16 @@ export default function Home() {
             >
               Tif<span style={{ color: accent }}>Fin</span>
             </span>
-          </div>
+          </a>
           <div className="flex items-center gap-3 sm:gap-5 md:gap-8">
-            <button
-              onClick={() => router.push("/book")}
+            <Link
+              href={"/book"}
               className="hidden sm:block text-[11px] uppercase tracking-[0.22em] text-slate-400 font-semibold hover:text-slate-700 transition-colors"
             >
               {tr("Biology Books")}
-            </button>
-            <button
-              onClick={() => router.push("/checkout")}
+            </Link>
+            <Link
+              href={"/checkout"}
               className="relative flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
               style={{
                 background: accent,
@@ -150,7 +151,7 @@ export default function Home() {
                   {cartCount}
                 </span>
               )}
-            </button>
+            </Link>
           </div>
         </nav>
 
@@ -184,7 +185,7 @@ export default function Home() {
                 {b.title}
               </h1>
               <p className="text-slate-500 text-sm mb-1">
-                {tr("by")}{" "}
+                <span className="text-xs mr-2">{tr("by")}</span>
                 <span className="text-slate-700 font-bold">{b.author.join(" | ")}</span>
               </p>
               <Stars rating={b.rating} />
@@ -228,8 +229,8 @@ export default function Home() {
                     </span>
                   </div>
                 </div>
-                <button
-                  onClick={() => router.push(`/book/${b._id}`)}
+                <Link
+                  href={`/book/${b._id}`}
                   className="px-7 sm:px-9 py-3.5 sm:py-4 rounded-full font-black text-sm text-white transition-all hover:scale-105 active:scale-95 shadow-xl"
                   style={{
                     background: accent,
@@ -237,9 +238,9 @@ export default function Home() {
                   }}
                 >
                   {tr("View Details →")}
-                </button>
-                <button
-                  onClick={() => router.push("/book")}
+                </Link>
+                <Link
+                  href={"/book"}
                   className="px-6 sm:px-7 py-3.5 sm:py-4 rounded-full font-black text-sm transition-all hover:scale-105 active:scale-95 border-2"
                   style={{
                     borderColor: accent,
@@ -248,7 +249,7 @@ export default function Home() {
                   }}
                 >
                   {tr("Browse Books")}
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -480,7 +481,7 @@ export default function Home() {
                   <button
                     key={bk._id}
                     onClick={() => go(i)}
-                    className="shrink-0 flex items-center gap-3 px-5 py-4 border-r transition-all"
+                    className="shrink-0 flex items-center gap-3 px-5 py-4 border-r transition-all cursor-pointer"
                     style={{
                       borderColor: "rgba(0,0,0,0.05)",
                       background: i === active ? bkC.accentLight + "99" : "transparent",
@@ -511,7 +512,7 @@ export default function Home() {
                   <button
                     key={bk._id}
                     onClick={() => go(i)}
-                    className="flex-1 flex items-center gap-3 px-3 py-2 border-r last:border-0 transition-all"
+                    className="flex-1 flex items-center gap-3 px-3 py-2 border-r last:border-0 transition-all cursor-pointer"
                     style={{
                       borderColor: "rgba(0,0,0,0.05)",
                       background: i === active ? bkC.accentLight + "99" : "transparent",

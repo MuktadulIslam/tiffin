@@ -121,6 +121,8 @@ export const translations: Record<string, string> = {
   "Amount:": "পরিমাণ:",
   "Continue Shopping →": "কেনাকাটা চালিয়ে যান →",
   "— Checkout": " — চেকআউট",
+  "Buy Now": "অর্ডার করুন",
+  "✓ Place Order":"✓ অর্ডার কনফার্ম করুন"
 };
 
 export function tr(key: string): string {

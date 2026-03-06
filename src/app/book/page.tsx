@@ -7,6 +7,7 @@ import { deriveColors } from "@/lib/colorUtils";
 import { useCart } from "@/context/CartContext";
 import Stars from "@/components/ui/Stars";
 import LeafBg from "@/components/ui/LeafBg";
+import Link from "next/link";
 
 interface Book {
   _id: string;
@@ -54,36 +55,54 @@ export default function BooksPage() {
 
       <div className="w-full flex-1 max-w-350 mx-auto flex flex-col py-2 px-4 min-h-0">
         {/* Nav */}
-        <nav className="relative z-20 flex items-center justify-between p-2">
-          <button onClick={() => router.push("/")} className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm" style={{ background: accentLight }}>
+        <nav className="relative z-20 flex items-center justify-between px-2 pb-2">
+          <a href="/" className="flex items-center gap-3">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
+              style={{ background: accentLight }}
+            >
               <svg viewBox="0 0 24 24" className="w-5 h-5" fill={accent}>
                 <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" />
               </svg>
             </div>
-            <span className="text-lg font-black tracking-tight text-slate-800" style={{ fontFamily: "'Georgia',serif" }}>
+            <span
+              className="text-lg font-black tracking-tight text-slate-800"
+              style={{ fontFamily: "'Georgia',serif" }}
+            >
               Tif<span style={{ color: accent }}>Fin</span>
             </span>
-          </button>
+          </a>
           <div className="flex items-center gap-3 sm:gap-5 md:gap-8">
-            <span className="hidden sm:inline text-[11px] uppercase tracking-[0.22em] font-black" style={{ color: accent }}>
-              {tr("Biology Books")}
-            </span>
-            <button
-              onClick={() => router.push("/checkout")}
-              className="relative flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
-              style={{ background: accent, boxShadow: `0 4px 18px ${accent}45` }}
+            <Link
+              href={"/book"}
+              className="hidden sm:block text-[11px] uppercase tracking-[0.22em] text-slate-400 font-semibold hover:text-slate-700 transition-colors"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+              {tr("Biology Books")}
+            </Link>
+            <Link
+              href={"/checkout"}
+              className="relative flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
+              style={{
+                background: accent,
+                boxShadow: `0 4px 18px ${accent}45`,
+              }}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                viewBox="0 0 24 24"
+              >
                 <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              {tr("Cart")}
+              <span className="hidden sm:inline">{tr("Cart")}</span>
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 w-5 h-5 bg-amber-400 text-slate-900 text-[10px] rounded-full flex items-center justify-center font-black shadow-md">
                   {cartCount}
                 </span>
               )}
-            </button>
+            </Link>
           </div>
         </nav>
 
@@ -188,13 +207,14 @@ export default function BooksPage() {
                         >
                           {tr("+ Add to Cart")}
                         </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); router.push(`/book/${bk._id}`); }}
+                        <Link
+                          href={`/book/${bk._id}`}
+                          // onClick={(e) => { e.stopPropagation(); router.push(`/book/${bk._id}`); }}
                           className="px-4 py-2 rounded-full text-xs font-black border-2 transition-all hover:scale-105 active:scale-95"
                           style={{ borderColor: c.accent, color: c.accent, background: c.accentLight }}
                         >
                           {tr("View →")}
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   </div>

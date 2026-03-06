@@ -7,13 +7,14 @@ import { deriveColors } from "@/lib/colorUtils";
 import { useCart } from "@/context/CartContext";
 import LeafBg from "@/components/ui/LeafBg";
 import HexBg from "@/components/ui/HexBg";
+import Link from "next/link";
 
 const G = "#1e7e3e";
 const { bgLight: GL } = deriveColors(G);
 
 export default function Checkout() {
   const router = useRouter();
-  const { cart, setCart } = useCart();
+  const { cart, cartCount, setCart } = useCart();
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -37,6 +38,7 @@ export default function Checkout() {
       p.map((c) => (c.id === id ? { ...c, qty: Math.max(1, c.qty + d) } : c)),
     );
   const remove = (id: string) => setCart((p) => p.filter((c) => c.id !== id));
+  const { accent, accentLight, bgLight, bgMid } = deriveColors("#1e7e3e");
 
   if (placed)
     return (
@@ -111,40 +113,59 @@ export default function Checkout() {
     <div className="min-h-screen font-sans relative" style={{ background: "#f5fdf7" }}>
       <HexBg color={G} />
 
-      {/* Nav */}
-      <nav className="relative z-20 flex items-center justify-between px-4 sm:px-6 md:px-10 py-4">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors font-semibold"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            viewBox="0 0 24 24"
-          >
-            <path d="M19 12H5m7-7l-7 7 7 7" />
-          </svg>
-          {tr("Back")}
-        </button>
-        <span
-          className="text-sm sm:text-base font-black text-slate-800"
-          style={{ fontFamily: "'Georgia',serif" }}
-        >
-          BioLit<span style={{ color: G }}>Store</span>
-          <span className="hidden sm:inline">{tr("— Checkout")}</span>
-        </span>
-        {/* Mobile summary toggle */}
-        <button
-          className="flex md:hidden items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full border"
-          style={{ borderColor: G, color: G, background: GL }}
-          onClick={() => setShowSummary((s) => !s)}
-        >
-          {fmtBn(grand)} {showSummary ? "▲" : "▼"}
-        </button>
-        <div className="hidden md:block" />
-      </nav>
+      <div className="w-full flex-1 max-w-350 mx-auto flex flex-col py-2 px-4 min-h-0">
+        {/* Nav */}
+        <nav className="relative z-20 flex items-center justify-between px-2 pb-2">
+          <a href="/" className="flex items-center gap-3">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
+              style={{ background: accentLight }}
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5" fill={accent}>
+                <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" />
+              </svg>
+            </div>
+            <span
+              className="text-lg font-black tracking-tight text-slate-800"
+              style={{ fontFamily: "'Georgia',serif" }}
+            >
+              Tif<span style={{ color: accent }}>Fin</span>
+            </span>
+          </a>
+          <div className="flex items-center gap-3 sm:gap-5 md:gap-8">
+            <Link
+              href={"/book"}
+              className="hidden sm:block text-[11px] uppercase tracking-[0.22em] text-slate-400 font-semibold hover:text-slate-700 transition-colors"
+            >
+              {tr("Biology Books")}
+            </Link>
+            <Link
+              href={"/checkout"}
+              className="relative flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
+              style={{
+                background: accent,
+                boxShadow: `0 4px 18px ${accent}45`,
+              }}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span className="hidden sm:inline">{tr("Cart")}</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 bg-amber-400 text-slate-900 text-[10px] rounded-full flex items-center justify-center font-black shadow-md">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          </div>
+        </nav>
+      </div>
 
       {/* Mobile order summary drawer */}
       {showSummary && (
@@ -574,16 +595,16 @@ export default function Checkout() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setStep(3)}
-                    className="px-5 sm:px-6 py-3 rounded-full border border-black/10 text-sm text-slate-600 hover:bg-slate-50 font-bold"
+                    className="px-5 sm:px-6 py-2 rounded-full border border-black/10 text-sm text-slate-600 hover:bg-slate-50 font-bold"
                   >
                     {tr("← Back")}
                   </button>
                   <button
                     onClick={() => setPlaced(true)}
-                    className="flex-1 py-4 rounded-full text-white font-black hover:scale-[1.02] transition-all shadow-xl"
+                    className="flex-1 py-2 rounded-full text-white font-black hover:scale-[1.02] transition-all shadow-xl"
                     style={{ background: G, boxShadow: `0 8px 28px ${G}48` }}
                   >
-                    ✓ Place Order — {fmtBn(grand)}
+                    {tr("✓ Place Order")} — {fmtBn(grand)}
                   </button>
                 </div>
               </>

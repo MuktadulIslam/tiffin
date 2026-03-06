@@ -7,6 +7,7 @@ import { deriveColors } from "@/lib/colorUtils";
 import { useCart } from "@/context/CartContext";
 import LeafBg from "@/components/ui/LeafBg";
 import Stars from "@/components/ui/Stars";
+import Link from "next/link";
 
 interface ChapterTopic {
   title: string;
@@ -39,7 +40,7 @@ interface Book {
 
 export default function SingleBook({ book: bk }: { book: Book }) {
   const router = useRouter();
-  const { cart, setCart } = useCart();
+  const { cart, cartCount, setCart } = useCart();
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState("about");
   const inCart = cart.find((c) => c.id === bk._id);
@@ -62,41 +63,67 @@ export default function SingleBook({ book: bk }: { book: Book }) {
       />
 
       {/* Nav */}
-      <nav className="relative z-20 flex items-center justify-between px-4 sm:px-6 md:px-10 py-4">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors font-semibold"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-            <path d="M19 12H5m7-7l-7 7 7 7" />
-          </svg>
-          <span className="hidden sm:inline">{tr("Back to Store")}</span>
-          <span className="sm:hidden">{tr("Back")}</span>
-        </button>
-        <span className="text-base font-black text-slate-800" style={{ fontFamily: "'Georgia',serif" }}>
-          Tif<span style={{ color: accent }}>Fin</span>
-        </span>
-        <button
-          onClick={() => router.push("/checkout")}
-          className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:scale-105"
-          style={{ background: accent }}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          <span className="hidden sm:inline">Cart ({cart.reduce((s, c) => s + c.qty, 0)})</span>
-          <span className="sm:hidden">{cart.reduce((s, c) => s + c.qty, 0)}</span>
-        </button>
-      </nav>
+      <div className="w-full flex-1 max-w-350 mx-auto flex flex-col py-2 px-4 min-h-0">
+        <nav className="relative z-20 flex items-center justify-between px-2 pb-2">
+          <a href="/" className="flex items-center gap-3">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
+              style={{ background: accentLight }}
+            >
+              <svg viewBox="0 0 24 24" className="w-5 h-5" fill={accent}>
+                <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z" />
+              </svg>
+            </div>
+            <span
+              className="text-lg font-black tracking-tight text-slate-800"
+              style={{ fontFamily: "'Georgia',serif" }}
+            >
+              Tif<span style={{ color: accent }}>Fin</span>
+            </span>
+          </a>
+          <div className="flex items-center gap-3 sm:gap-5 md:gap-8">
+            <Link
+              href={"/book"}
+              className="hidden sm:block text-[11px] uppercase tracking-[0.22em] text-slate-400 font-semibold hover:text-slate-700 transition-colors"
+            >
+              {tr("Biology Books")}
+            </Link>
+            <Link
+              href={"/checkout"}
+              className="relative flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"
+              style={{
+                background: accent,
+                boxShadow: `0 4px 18px ${accent}45`,
+              }}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span className="hidden sm:inline">{tr("Cart")}</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 bg-amber-400 text-slate-900 text-[10px] rounded-full flex items-center justify-center font-black shadow-md">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          </div>
+        </nav>
+      </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12 flex flex-col md:flex-row gap-8 md:gap-14">
         {/* Book Visual */}
-        <div className="flex flex-row md:flex-col items-center md:items-center gap-4 md:shrink-0">
-          <div className="relative shrink-0" style={{ animation: "floatUp 5s ease-in-out infinite" }}>
+        <div className="flex flex-col items-center md:items-center gap-4 md:shrink-0">
+          <div className="relative shrink-0 w-full" style={{ animation: "floatUp 5s ease-in-out infinite" }}>
             <style>{`@keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}`}</style>
             <div className="absolute -inset-5 rounded-3xl blur-3xl opacity-25 transition-all duration-700" style={{ background: bgMid }} />
-            <div className="relative w-36 sm:w-44 md:w-52 rounded-2xl overflow-hidden bg-white" style={{ boxShadow: `0 25px 65px ${accent}38,0 4px 14px rgba(0,0,0,0.08)` }}>
-              <img src={bk.cover} alt={bk.title} className="w-full object-cover" style={{ height: "200px" }} />
+            <div className="relative w-full md:w-60 rounded-2xl overflow-hidden bg-white" style={{ boxShadow: `0 25px 65px ${accent}38,0 4px 14px rgba(0,0,0,0.08)` }}>
+              <img src={bk.cover} alt={bk.title} className="w-full object-cover h-100 sm:h-70" />
               <div className="p-3 md:p-4 border-t" style={{ borderColor: accent + "20" }}>
                 <p className="text-slate-800 font-black text-xs leading-snug line-clamp-2">{bk.title}</p>
                 {bk.version && <p className="text-slate-400 text-[10px] mt-0.5">{bk.version}</p>}
@@ -250,17 +277,17 @@ export default function SingleBook({ book: bk }: { book: Book }) {
             </div>
             <button
               onClick={addToCart}
-              className="flex-1 min-w-30 py-3.5 rounded-full font-black text-sm text-white transition-all hover:scale-105 active:scale-95 shadow-lg"
+              className="flex-1 min-w-40 py-3.5 rounded-full font-black text-sm text-white transition-all hover:scale-105 active:scale-95 shadow-lg"
               style={{ background: accent, boxShadow: `0 6px 22px ${accent}48` }}
             >
               {inCart ? `✓ ${tr("Added — Add More")}` : tr("Add to Cart")}
             </button>
             <button
               onClick={() => { addToCart(); router.push("/checkout"); }}
-              className="flex-1 min-w-25 py-3.5 rounded-full font-black text-sm transition-all hover:scale-105 active:scale-95 border-2 shadow-sm"
+              className="flex-1 min-w-20 py-3.5 rounded-full font-black text-sm transition-all hover:scale-105 active:scale-95 border-2 shadow-sm"
               style={{ borderColor: accent, color: accent, background: accentLight }}
             >
-              Buy Now
+              {tr("Buy Now")}
             </button>
           </div>
         </div>
