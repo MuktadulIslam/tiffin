@@ -1,7 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { CartItem } from "@/lib/data";
+
+const CART_KEY = "tiffin_cart";
 
 interface CartContextType {
   cart: CartItem[];
@@ -13,6 +15,19 @@ const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(CART_KEY);
+      if (stored) setCart(JSON.parse(stored));
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  }, [cart]);
 
   const cartCount = cart.reduce((s, c) => s + c.qty, 0);
 

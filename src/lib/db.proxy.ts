@@ -309,6 +309,145 @@ export async function dbDeleteBook(id: string) {
   return Book.findByIdAndDelete(id);
 }
 
+// ─── Order Model ───────────────────────────────────────────────────────────────
+
+export type OrderStatus = "pending" | "confirmed" | "cancelled";
+export type PaymentMethod = "cod" | "bkash" | "nagad";
+
+export interface IOrderItem {
+  bookId: string;
+  title: string;
+  author: string[];
+  cover: string;
+  price: number;
+  qty: number;
+}
+
+export interface IOrder extends Document {
+  orderNumber: string;
+  customer: {
+    name: string;
+    phone: string;
+    address: string;
+    city: string;
+    note?: string;
+  };
+  items: IOrderItem[];
+  subtotal: number;
+  shipping: number;
+  total: number;
+  payment: {
+    method: PaymentMethod;
+    mobileNumber?: string;
+    transactionId?: string;
+  };
+  status: OrderStatus;
+  handledBy?: string;   // admin username who confirmed/cancelled
+  handledAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const OrderItemSchema = new Schema<IOrderItem>(
+  {
+    bookId: { type: String, required: true },
+    title: { type: String, required: true },
+    author: { type: [String], required: true },
+    cover: { type: String, required: true },
+    price: { type: Number, required: true },
+    qty: { type: Number, required: true, min: 1 },
+  },
+  { _id: false }
+);
+
+const OrderSchema = new Schema<IOrder>(
+  {
+    orderNumber: { type: String, required: true, unique: true },
+    customer: {
+      name: { type: String, required: true, trim: true },
+      phone: { type: String, required: true, trim: true },
+      address: { type: String, required: true, trim: true },
+      city: { type: String, required: true, trim: true },
+      note: { type: String, trim: true },
+    },
+    items: { type: [OrderItemSchema], required: true },
+    subtotal: { type: Number, required: true },
+    shipping: { type: Number, required: true },
+    total: { type: Number, required: true },
+    payment: {
+      method: { type: String, enum: ["cod", "bkash", "nagad"], required: true },
+      mobileNumber: { type: String },
+      transactionId: { type: String },
+    },
+    status: { type: String, enum: ["pending", "confirmed", "cancelled"], default: "pending" },
+    handledBy: { type: String },
+    handledAt: { type: Date },
+  },
+  { timestamps: true }
+);
+
+function getOrderModel(): Model<IOrder> {
+  // In development, clear the cached model so schema changes apply on hot-reload
+  if (process.env.NODE_ENV === "development" && mongoose.models.Order) {
+    delete mongoose.models.Order;
+  }
+  return mongoose.models.Order as Model<IOrder> ||
+    mongoose.model<IOrder>("Order", OrderSchema);
+}
+
+// ─── Order DB operations ────────────────────────────────────────────────────────
+
+function generateOrderNumber(): string {
+  const ts = Date.now().toString(36).toUpperCase();
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `ORD-${ts}-${rand}`;
+}
+
+export async function dbCreateOrder(data: {
+  customer: IOrder["customer"];
+  items: IOrderItem[];
+  subtotal: number;
+  shipping: number;
+  total: number;
+  payment: IOrder["payment"];
+}) {
+  await connectDB();
+  const Order = getOrderModel();
+  const orderNumber = generateOrderNumber();
+  return Order.create({ ...data, orderNumber, status: "pending" });
+}
+
+export async function dbGetOrders(filter?: { status?: OrderStatus }) {
+  await connectDB();
+  const Order = getOrderModel();
+  const query = filter?.status ? { status: filter.status } : {};
+  return Order.find(query).sort({ createdAt: -1 }).lean();
+}
+
+export async function dbGetOrderById(id: string) {
+  await connectDB();
+  const Order = getOrderModel();
+  return Order.findById(id).lean();
+}
+
+export async function dbUpdateOrderStatus(
+  id: string,
+  status: "confirmed" | "cancelled",
+  adminUsername: string
+) {
+  await connectDB();
+  const Order = getOrderModel();
+  const order = await Order.findById(id);
+  if (!order) throw Object.assign(new Error("Order not found"), { code: 404 });
+  if (order.status !== "pending")
+    throw Object.assign(new Error("Only pending orders can be updated"), { code: 400 });
+  order.status = status;
+  order.handledBy = adminUsername;
+  order.handledAt = new Date();
+  await order.save({ validateModifiedOnly: true });
+  return order.toObject();
+}
+
 // ─── Token DB operations ───────────────────────────────────────────────────────
 
 export async function dbGetTokens() {

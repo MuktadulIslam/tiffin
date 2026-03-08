@@ -120,7 +120,14 @@ export const translations: Record<string, string> = {
   "Continue Shopping →": "কেনাকাটা চালিয়ে যান →",
   "— Checkout": " — চেকআউট",
   "Buy Now": "অর্ডার করুন",
-  "✓ Place Order":"✓ অর্ডার কনফার্ম করুন"
+  "✓ Place Order":"✓ অর্ডার কনফার্ম করুন",
+  "Mobile Banking": "মোবাইল ব্যাংকিং",
+  "Pay via bKash or Nagad": "বিকাশ বা নগদে পেমেন্ট করুন",
+  "to the number above via": "উপরের নম্বরে",
+  "app, then enter your Transaction ID below.": "অ্যাপে পাঠান, তারপর নিচে ট্রানজেকশন আইডি দিন।",
+  "Your": "আপনার",
+  "Number": "নম্বর",
+  "Nagad Payment Confirmed": "নগদ পেমেন্ট নিশ্চিত"
 };
 
 export function tr(key: string): string {

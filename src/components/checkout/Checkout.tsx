@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { tr, fmtBn, toBnDigits } from "@/lib/bn";
 import { deriveColors } from "@/lib/colorUtils";
@@ -11,6 +11,7 @@ import Link from "next/link";
 
 const G = "#1e7e3e";
 const { bgLight: GL } = deriveColors(G);
+const DELIVERY_KEY = "tiffin_delivery";
 
 export default function Checkout() {
   const router = useRouter();
@@ -23,10 +24,28 @@ export default function Checkout() {
     note: "",
   });
   const [payment, setPayment] = useState("cod");
-  const [bkashNum, setBkashNum] = useState("");
-  const [bkashTxn, setBkashTxn] = useState("");
+  const [mobileProvider, setMobileProvider] = useState<"bkash" | "nagad">("bkash");
+  const [mobileNum, setMobileNum] = useState("");
+  const [mobileTxn, setMobileTxn] = useState("");
+
+  // Load delivery info from localStorage after mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(DELIVERY_KEY);
+      if (stored) setForm(JSON.parse(stored));
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Save delivery info to localStorage on change
+  useEffect(() => {
+    localStorage.setItem(DELIVERY_KEY, JSON.stringify(form));
+  }, [form]);
   const [step, setStep] = useState(1);
   const [placed, setPlaced] = useState(false);
+  const [placing, setPlacing] = useState(false);
+  const [placeError, setPlaceError] = useState("");
   const [showSummary, setShowSummary] = useState(false);
 
   const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
@@ -80,12 +99,14 @@ export default function Checkout() {
             </span>
             {tr("! Your books will arrive soon. Happy reading!")} 📚
           </p>
-          {payment === "bkash" && (
+          {payment === "mobile" && (
             <div className="p-4 rounded-xl bg-pink-50 border border-pink-100 mb-6 text-sm text-left">
-              <p className="text-[#d72660] font-black mb-1">{tr("bKash Payment Confirmed")}</p>
+              <p className="font-black mb-1" style={{ color: mobileProvider === "bkash" ? "#d72660" : "#f97316" }}>
+                {mobileProvider === "bkash" ? tr("bKash Payment Confirmed") : tr("Nagad Payment Confirmed")}
+              </p>
               <p className="text-slate-400 text-xs">
                 {tr("TrxID:")}{" "}
-                <span className="text-slate-700 font-bold">{bkashTxn}</span>
+                <span className="text-slate-700 font-bold">{mobileTxn}</span>
               </p>
               <p className="text-slate-400 text-xs">
                 {tr("Amount:")}{" "}
@@ -274,7 +295,7 @@ export default function Checkout() {
                         />
                         <div className="flex-1 min-w-0">
                           <h3 className="font-black text-slate-800 text-sm line-clamp-2">{c.title}</h3>
-                          <p className="text-xs text-slate-400 mt-0.5">{c.author}</p>
+                          <p className="text-xs text-slate-400 mt-0.5">{Array.isArray(c.author) ? c.author.join(" | ") : c.author}</p>
                           <div className="flex flex-wrap items-center gap-2 mt-3">
                             <div className="flex items-center gap-2 border border-black/10 rounded-full px-3 py-1 bg-white shadow-sm">
                               <button
@@ -345,9 +366,14 @@ export default function Checkout() {
                         type={type}
                         placeholder={placeholder}
                         value={form[key as keyof typeof form]}
-                        onChange={(e) =>
-                          setForm((p) => ({ ...p, [key]: e.target.value }))
-                        }
+                        onChange={(e) => {
+                          if (key === "phone") {
+                            const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+                            setForm((p) => ({ ...p, [key]: digits }));
+                          } else {
+                            setForm((p) => ({ ...p, [key]: e.target.value }));
+                          }
+                        }}
                         className={inputCls}
                         onFocus={(e) => {
                           e.target.style.borderColor = G;
@@ -370,7 +396,7 @@ export default function Checkout() {
                   </button>
                   <button
                     onClick={() => setStep(3)}
-                    disabled={!form.name || !form.phone || !form.address || !form.city}
+                    disabled={!form.name || form.phone.length !== 11 || !form.address || !form.city}
                     className="flex-1 py-3 rounded-full text-white font-black hover:scale-[1.02] transition-all shadow-xl disabled:opacity-40 disabled:cursor-not-allowed"
                     style={{ background: G }}
                   >
@@ -421,68 +447,105 @@ export default function Checkout() {
                     </div>
                   </button>
 
-                  {/* bKash */}
+                  {/* Mobile Banking */}
                   <button
-                    onClick={() => setPayment("bkash")}
+                    onClick={() => setPayment("mobile")}
                     className="w-full flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-2xl border-2 transition-all text-left"
                     style={{
-                      borderColor: payment === "bkash" ? "#d72660" : "#e2e8f0",
-                      background: payment === "bkash" ? "#fff7fa" : "#fafafa",
+                      borderColor: payment === "mobile" ? "#d72660" : "#e2e8f0",
+                      background: payment === "mobile" ? "#fff7fa" : "#fafafa",
                     }}
                   >
-                    <div
-                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-md"
-                      style={{ background: "#d72660" }}
-                    >
-                      <span className="text-white font-black text-[11px] tracking-tight">bKash</span>
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl shrink-0 shadow-md overflow-hidden">
+                      <img src="/logo/mobile-banking.jpg" alt="Mobile Banking" className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-black text-slate-800">{tr("bKash Mobile Banking")}</p>
+                      <p className="font-black text-slate-800">{tr("Mobile Banking")}</p>
                       <p className="text-xs text-slate-400 mt-0.5">
-                        {tr("Bangladesh's #1 mobile payment platform")}
+                        {tr("Pay via bKash or Nagad")}
                       </p>
                     </div>
                     <div
                       className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
-                      style={{ borderColor: payment === "bkash" ? "#d72660" : "#cbd5e1" }}
+                      style={{ borderColor: payment === "mobile" ? "#d72660" : "#cbd5e1" }}
                     >
-                      {payment === "bkash" && (
+                      {payment === "mobile" && (
                         <div className="w-2.5 h-2.5 rounded-full bg-[#d72660]" />
                       )}
                     </div>
                   </button>
                 </div>
 
-                {payment === "bkash" && (
+                {payment === "mobile" && (
                   <div className="p-4 sm:p-5 rounded-2xl border border-pink-200 bg-pink-50 mb-6">
-                    <div className="flex items-center gap-3 sm:gap-4 mb-4 pb-4 border-b border-pink-100">
-                      <div
-                        className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl shadow-md flex items-center justify-center shrink-0"
-                        style={{ background: "#d72660" }}
+                    {/* Provider selector */}
+                    <div className="flex gap-3 mb-5">
+                      <button
+                        onClick={() => setMobileProvider("bkash")}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 transition-all text-xl text-[#d72660] font-bold"
+                        style={{
+                          borderColor: mobileProvider === "bkash" ? "#d72660" : "#f1d0db",
+                          background: mobileProvider === "bkash" ? "#fff0f5" : "#fff",
+                          boxShadow: mobileProvider === "bkash" ? "0 0 0 3px #d7266025" : "none",
+                        }}
                       >
-                        <span className="text-white font-black text-[11px]">bKash</span>
+                        bKash
+                      </button>
+                      <button
+                        onClick={() => setMobileProvider("nagad")}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border-2 transition-all text-xl text-[#f97316] font-bold"
+                        style={{
+                          borderColor: mobileProvider === "nagad" ? "#f97316" : "#fde8d5",
+                          background: mobileProvider === "nagad" ? "#fff7ed" : "#fff",
+                          boxShadow: mobileProvider === "nagad" ? "0 0 0 3px #f9731625" : "none",
+                        }}
+                      >
+                        Nagad
+                      </button>
+                    </div>
+
+                    {/* Send to number */}
+                    <div className="flex items-center gap-3 sm:gap-4 mb-4 pb-4 border-b border-pink-100">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl shadow-md shrink-0 overflow-hidden bg-white border border-pink-100 flex items-center justify-center">
+                        <img
+                          src={mobileProvider === "bkash" ? "/logo/bkash.png" : "/logo/nagad.png"}
+                          alt={mobileProvider === "bkash" ? "bKash" : "Nagad"}
+                          className="w-full h-full object-contain"
+                        />
                       </div>
                       <div>
                         <p className="text-xs font-bold text-slate-500 mb-0.5">{tr("Send Payment To")}</p>
-                        <p className="text-xl sm:text-2xl font-black text-[#d72660]">01XXXXXXXXX</p>
+                        <p
+                          className="text-xl sm:text-2xl font-black"
+                          style={{ color: mobileProvider === "bkash" ? "#d72660" : "#f97316" }}
+                        >
+                          01XXXXXXXXX
+                        </p>
                       </div>
                     </div>
+
                     <p className="text-xs text-slate-500 mb-4">
                       {tr("Send")}{" "}
                       <span className="font-black text-slate-800">{fmtBn(grand)}</span>{" "}
-                      {tr("to the number above via bKash app, then fill in the details below to confirm your order.")}
+                      {tr("to the number above via")}{" "}
+                      <span className="font-black" style={{ color: mobileProvider === "bkash" ? "#d72660" : "#f97316" }}>
+                        {mobileProvider === "bkash" ? "bKash" : "Nagad"}
+                      </span>{" "}
+                      {tr("app, then enter your Transaction ID below.")}
                     </p>
+
                     <div className="space-y-3">
                       <div>
                         <label className="text-xs font-black text-slate-500 mb-1.5 block uppercase tracking-wide">
-                          {tr("Your bKash Number")}
+                          {tr("Your")} {mobileProvider === "bkash" ? "bKash" : "Nagad"} {tr("Number")}
                         </label>
                         <input
                           type="tel"
                           placeholder="01XXXXXXXXX"
-                          value={bkashNum}
-                          onChange={(e) => setBkashNum(e.target.value)}
-                          className="w-full bg-white border border-pink-200 rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-300 focus:outline-none focus:border-[#d72660]"
+                          value={mobileNum}
+                          onChange={(e) => setMobileNum(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                          className="w-full bg-white border rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-300 focus:outline-none"
+                          style={{ borderColor: mobileProvider === "bkash" ? "#f9a8c9" : "#fed7aa" }}
                         />
                       </div>
                       <div>
@@ -492,9 +555,10 @@ export default function Checkout() {
                         <input
                           type="text"
                           placeholder="e.g. ABC1234567"
-                          value={bkashTxn}
-                          onChange={(e) => setBkashTxn(e.target.value)}
-                          className="w-full bg-white border border-pink-200 rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-300 focus:outline-none focus:border-[#d72660]"
+                          value={mobileTxn}
+                          onChange={(e) => setMobileTxn(e.target.value)}
+                          className="w-full bg-white border rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-300 focus:outline-none"
+                          style={{ borderColor: mobileProvider === "bkash" ? "#f9a8c9" : "#fed7aa" }}
                         />
                       </div>
                     </div>
@@ -510,9 +574,9 @@ export default function Checkout() {
                   </button>
                   <button
                     onClick={() => setStep(4)}
-                    disabled={payment === "bkash" && (!bkashNum || !bkashTxn)}
+                    disabled={payment === "mobile" && (mobileNum.length !== 11 || !mobileTxn)}
                     className="flex-1 py-3 rounded-full font-black text-sm text-white transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed shadow-xl"
-                    style={{ background: payment === "bkash" ? "#d72660" : G }}
+                    style={{ background: payment === "mobile" ? (mobileProvider === "bkash" ? "#d72660" : "#f97316") : G }}
                   >
                     {tr("Review Order →")}
                   </button>
@@ -551,11 +615,13 @@ export default function Checkout() {
                       content: (
                         <>
                           <p className="font-black text-slate-800 text-sm">
-                            {payment === "cod" ? `💵 ${tr("Cash on Delivery")}` : tr("bKash Mobile Banking")}
+                            {payment === "cod"
+                              ? `💵 ${tr("Cash on Delivery")}`
+                              : `${mobileProvider === "bkash" ? "bKash" : "Nagad"} ${tr("Mobile Banking")}`}
                           </p>
-                          {payment === "bkash" && (
+                          {payment === "mobile" && (
                             <p className="text-xs text-slate-400">
-                              {tr("From:")} {bkashNum} · {tr("TrxID:")} {bkashTxn}
+                              {tr("From:")} {mobileNum} · {tr("TrxID:")} {mobileTxn}
                             </p>
                           )}
                         </>
@@ -592,6 +658,9 @@ export default function Checkout() {
                     ))}
                   </div>
                 </div>
+                {placeError && (
+                  <p className="text-sm text-red-500 font-semibold mb-3 text-center">{placeError}</p>
+                )}
                 <div className="flex gap-3">
                   <button
                     onClick={() => setStep(3)}
@@ -600,11 +669,54 @@ export default function Checkout() {
                     {tr("← Back")}
                   </button>
                   <button
-                    onClick={() => setPlaced(true)}
-                    className="flex-1 py-2 rounded-full text-white font-black hover:scale-[1.02] transition-all shadow-xl"
+                    onClick={async () => {
+                      setPlacing(true);
+                      setPlaceError("");
+                      try {
+                        const paymentMethod =
+                          payment === "cod" ? "cod" : mobileProvider;
+                        const res = await fetch("/api/orders", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            customer: form,
+                            items: cart.map((c) => ({
+                              bookId: c.id,
+                              title: c.title,
+                              author: c.author,
+                              cover: c.cover,
+                              price: c.price,
+                              qty: c.qty,
+                            })),
+                            subtotal: total,
+                            shipping,
+                            total: grand,
+                            payment: {
+                              method: paymentMethod,
+                              mobileNumber: payment === "mobile" ? mobileNum : undefined,
+                              transactionId: payment === "mobile" ? mobileTxn : undefined,
+                            },
+                          }),
+                        });
+                        if (!res.ok) {
+                          const d = await res.json();
+                          setPlaceError(d.error || tr("Something went wrong. Try again."));
+                        } else {
+                          setCart([]);
+                          localStorage.removeItem(DELIVERY_KEY);
+                          setPlaced(true);
+                        }
+                      } catch {
+                        setPlaceError(tr("Something went wrong. Try again."));
+                      } finally {
+                        setPlacing(false);
+                      }
+                    }}
+                    disabled={placing}
+                    className="flex-1 py-2 rounded-full text-white font-black hover:scale-[1.02] transition-all shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
                     style={{ background: G, boxShadow: `0 8px 28px ${G}48` }}
                   >
-                    {tr("✓ Place Order")} — {fmtBn(grand)}
+                    {placing ? tr("Placing Order…") : `${tr("✓ Place Order")} — ${fmtBn(grand)}`}
                   </button>
                 </div>
               </>
