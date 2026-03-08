@@ -7,6 +7,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { ORDER, ORDER_STATUS_VALUES, PAYMENT_METHOD_VALUES } from "@/config";
 
 // ─── Connection ────────────────────────────────────────────────────────────────
 
@@ -311,8 +312,8 @@ export async function dbDeleteBook(id: string) {
 
 // ─── Order Model ───────────────────────────────────────────────────────────────
 
-export type OrderStatus = "pending" | "confirmed" | "cancelled";
-export type PaymentMethod = "cod" | "bkash" | "nagad";
+export type OrderStatus = (typeof ORDER.STATUS)[keyof typeof ORDER.STATUS];
+export type PaymentMethod = (typeof ORDER.PAYMENT_METHOD)[keyof typeof ORDER.PAYMENT_METHOD];
 
 export interface IOrderItem {
   bookId: string;
@@ -375,11 +376,11 @@ const OrderSchema = new Schema<IOrder>(
     shipping: { type: Number, required: true },
     total: { type: Number, required: true },
     payment: {
-      method: { type: String, enum: ["cod", "bkash", "nagad"], required: true },
+      method: { type: String, enum: PAYMENT_METHOD_VALUES, required: true },
       mobileNumber: { type: String },
       transactionId: { type: String },
     },
-    status: { type: String, enum: ["pending", "confirmed", "cancelled"], default: "pending" },
+    status: { type: String, enum: ORDER_STATUS_VALUES, default: ORDER.STATUS.PENDING },
     handledBy: { type: String },
     handledAt: { type: Date },
   },
@@ -414,7 +415,7 @@ export async function dbCreateOrder(data: {
   await connectDB();
   const Order = getOrderModel();
   const orderNumber = generateOrderNumber();
-  return Order.create({ ...data, orderNumber, status: "pending" });
+  return Order.create({ ...data, orderNumber, status: ORDER.STATUS.PENDING });
 }
 
 export async function dbGetOrders(filter?: { status?: OrderStatus }) {
@@ -432,14 +433,14 @@ export async function dbGetOrderById(id: string) {
 
 export async function dbUpdateOrderStatus(
   id: string,
-  status: "confirmed" | "cancelled",
+  status: typeof ORDER.STATUS.CONFIRMED | typeof ORDER.STATUS.CANCELLED,
   adminUsername: string
 ) {
   await connectDB();
   const Order = getOrderModel();
   const order = await Order.findById(id);
   if (!order) throw Object.assign(new Error("Order not found"), { code: 404 });
-  if (order.status !== "pending")
+  if (order.status !== ORDER.STATUS.PENDING)
     throw Object.assign(new Error("Only pending orders can be updated"), { code: 400 });
   order.status = status;
   order.handledBy = adminUsername;

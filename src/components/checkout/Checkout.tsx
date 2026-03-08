@@ -188,6 +188,29 @@ export default function Checkout() {
         </nav>
       </div>
 
+      {/* Mobile order summary toggle */}
+      <div className="relative z-20 md:hidden mx-4 mb-2">
+        <button
+          onClick={() => setShowSummary((v) => !v)}
+          className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-2xl shadow-sm border border-black/5 text-sm font-black text-slate-700"
+        >
+          <span>{tr("Order Summary")}</span>
+          <span className="flex items-center gap-2">
+            <span style={{ color: G }}>{fmtBn(grand)}</span>
+            <svg
+              className="w-4 h-4 text-slate-400 transition-transform"
+              style={{ transform: showSummary ? "rotate(180deg)" : "rotate(0deg)" }}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </span>
+        </button>
+      </div>
+
       {/* Mobile order summary drawer */}
       {showSummary && (
         <div className="relative z-20 md:hidden mx-4 mb-2 bg-white rounded-2xl shadow-lg border border-black/5 p-4">

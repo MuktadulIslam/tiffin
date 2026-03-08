@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AdminLogin() {
@@ -8,13 +8,6 @@ export default function AdminLogin() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/admin/auth/me")
-      .then((r) => r.json())
-      .then((d) => { if (d.admin) router.replace("/admin/dashboard"); })
-      .catch(() => {});
-  }, [router]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +56,7 @@ export default function AdminLogin() {
                 value={form.username}
                 onChange={(e) => setForm({ ...form, username: e.target.value })}
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-800 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"
-                placeholder="tiffin-super-admin"
+                placeholder="admin-username"
                 required
                 autoFocus
               />

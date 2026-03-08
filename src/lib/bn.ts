@@ -66,7 +66,7 @@ export const translations: Record<string, string> = {
   "Tag": "ট্যাগ",
   "No chapters listed for this book.": "এই বইয়ের কোনো অধ্যায় নেই।",
   "Add to Cart": "কার্টে যোগ করুন",
-  "Added — Add More": "যোগ হয়েছে — আরো যোগ করুন",
+  "Added — Add More": "আরো যোগ করুন",
 
   // Checkout
   "Order Summary": "অর্ডার সারসংক্ষেপ",
@@ -104,7 +104,7 @@ export const translations: Record<string, string> = {
   "to the number above via bKash app, then fill in the details below to confirm your order.": "উপরের নম্বরে বিকাশে পেমেন্ট করুন, তারপর নিচের তথ্য পূরণ করুন।",
   "Your bKash Number": "আপনার বিকাশ নম্বর",
   "Transaction ID (TrxID)": "ট্রানজেকশন আইডি",
-  "Review Order →": "অর্ডার পর্যালোচনা করুন →",
+  "Review Order →": "অর্ডার রিভিউ করুন →",
   "Review & Confirm": "পর্যালোচনা ও নিশ্চিত করুন",
   "Delivery To": "ডেলিভারি পাঠান",
   "Books Ordered": "অর্ডার করা বই",
@@ -120,7 +120,7 @@ export const translations: Record<string, string> = {
   "Continue Shopping →": "কেনাকাটা চালিয়ে যান →",
   "— Checkout": " — চেকআউট",
   "Buy Now": "অর্ডার করুন",
-  "✓ Place Order":"✓ অর্ডার কনফার্ম করুন",
+  "✓ Place Order":"✓ কনফার্ম করুন",
   "Mobile Banking": "মোবাইল ব্যাংকিং",
   "Pay via bKash or Nagad": "বিকাশ বা নগদে পেমেন্ট করুন",
   "to the number above via": "উপরের নম্বরে",

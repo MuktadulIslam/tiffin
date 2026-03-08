@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { dbUpdateOrderStatus } from "@/lib/db.proxy";
+import { ORDER } from "@/config";
 
 export async function PATCH(
   req: NextRequest,
@@ -11,8 +12,8 @@ export async function PATCH(
     const { id } = await params;
     const { status } = await req.json();
 
-    if (status !== "confirmed" && status !== "cancelled")
-      return NextResponse.json({ error: "Invalid status. Must be 'confirmed' or 'cancelled'" }, { status: 400 });
+    if (status !== ORDER.STATUS.CONFIRMED && status !== ORDER.STATUS.CANCELLED)
+      return NextResponse.json({ error: `Invalid status. Must be '${ORDER.STATUS.CONFIRMED}' or '${ORDER.STATUS.CANCELLED}'` }, { status: 400 });
 
     const order = await dbUpdateOrderStatus(id, status, admin.username);
     return NextResponse.json(order);

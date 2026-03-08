@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
+import {AUTH} from '@/config'
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 if (!JWT_SECRET) throw new Error("Please define JWT_SECRET in .env.local");
@@ -20,15 +21,11 @@ export function verifyToken(token: string): JwtPayload {
 }
 
 export function getAdminFromRequest(req: NextRequest): JwtPayload | null {
-  const authHeader = req.headers.get("authorization");
-  const cookieToken = req.cookies.get("admin_token")?.value;
-  const token = authHeader?.startsWith("Bearer ")
-    ? authHeader.slice(7)
-    : cookieToken;
+  const cookieToken = req.cookies.get(AUTH.COOKIE_NAME)?.value;
 
-  if (!token) return null;
+  if (!cookieToken) return null;
   try {
-    return verifyToken(token);
+    return verifyToken(cookieToken);
   } catch {
     return null;
   }

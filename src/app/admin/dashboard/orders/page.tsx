@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-
-type OrderStatus = "pending" | "confirmed" | "cancelled";
-type PaymentMethod = "cod" | "bkash" | "nagad";
+import { ORDER } from "@/config";
+import type { OrderStatus, PaymentMethod } from "@/lib/db.proxy";
 
 interface OrderItem {
   bookId: string;
@@ -40,15 +39,15 @@ interface Order {
 }
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
-  pending: "Pending",
-  confirmed: "Confirmed",
-  cancelled: "Cancelled",
+  [ORDER.STATUS.PENDING]: "Pending",
+  [ORDER.STATUS.CONFIRMED]: "Confirmed",
+  [ORDER.STATUS.CANCELLED]: "Cancelled",
 };
 
 const STATUS_COLORS: Record<OrderStatus, { bg: string; text: string; border: string }> = {
-  pending: { bg: "#fffbeb", text: "#b45309", border: "#fde68a" },
-  confirmed: { bg: "#ecfdf5", text: "#065f46", border: "#a7f3d0" },
-  cancelled: { bg: "#fef2f2", text: "#991b1b", border: "#fecaca" },
+  [ORDER.STATUS.PENDING]: { bg: "#fffbeb", text: "#b45309", border: "#fde68a" },
+  [ORDER.STATUS.CONFIRMED]: { bg: "#ecfdf5", text: "#065f46", border: "#a7f3d0" },
+  [ORDER.STATUS.CANCELLED]: { bg: "#fef2f2", text: "#991b1b", border: "#fecaca" },
 };
 
 const PAYMENT_LABELS: Record<PaymentMethod, string> = {
@@ -146,7 +145,7 @@ export default function OrdersPage() {
 
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
-  async function handleAction(orderId: string, status: "confirmed" | "cancelled") {
+  async function handleAction(orderId: string, status: typeof ORDER.STATUS.CONFIRMED | typeof ORDER.STATUS.CANCELLED) {
     setActionLoading(orderId + status);
     try {
       const res = await fetch(`/api/admin/orders/${orderId}`, {
@@ -194,9 +193,9 @@ export default function OrdersPage() {
   // Summary counts (from all orders, not filtered)
   const counts = {
     all: orders.length,
-    pending: orders.filter((o) => o.status === "pending").length,
-    confirmed: orders.filter((o) => o.status === "confirmed").length,
-    cancelled: orders.filter((o) => o.status === "cancelled").length,
+    pending: orders.filter((o) => o.status === ORDER.STATUS.PENDING).length,
+    confirmed: orders.filter((o) => o.status === ORDER.STATUS.CONFIRMED).length,
+    cancelled: orders.filter((o) => o.status === ORDER.STATUS.CANCELLED).length,
   };
 
   return (
@@ -312,9 +311,9 @@ export default function OrdersPage() {
               onChange={setFilterStatus}
               options={[
                 { value: "all", label: "All" },
-                { value: "pending", label: "Pending" },
-                { value: "confirmed", label: "Confirmed" },
-                { value: "cancelled", label: "Cancelled" },
+                { value: ORDER.STATUS.PENDING, label: STATUS_LABELS[ORDER.STATUS.PENDING] },
+                { value: ORDER.STATUS.CONFIRMED, label: STATUS_LABELS[ORDER.STATUS.CONFIRMED] },
+                { value: ORDER.STATUS.CANCELLED, label: STATUS_LABELS[ORDER.STATUS.CANCELLED] },
               ]}
             />
           </div>
@@ -528,21 +527,21 @@ export default function OrdersPage() {
               </section>
 
               {/* Actions */}
-              {selected.status === "pending" && (
+              {selected.status === ORDER.STATUS.PENDING && (
                 <div className="flex gap-3 pt-1">
                   <button
-                    onClick={() => handleAction(selected._id, "cancelled")}
+                    onClick={() => handleAction(selected._id, ORDER.STATUS.CANCELLED)}
                     disabled={!!actionLoading}
                     className="flex-1 py-3 rounded-xl border-2 border-red-200 text-red-600 font-black text-sm hover:bg-red-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {actionLoading === selected._id + "cancelled" ? "Cancelling…" : "✕ Cancel Order"}
+                    {actionLoading === selected._id + ORDER.STATUS.CANCELLED ? "Cancelling…" : "✕ Cancel Order"}
                   </button>
                   <button
-                    onClick={() => handleAction(selected._id, "confirmed")}
+                    onClick={() => handleAction(selected._id, ORDER.STATUS.CONFIRMED)}
                     disabled={!!actionLoading}
                     className="flex-1 py-3 rounded-xl bg-emerald-600 text-white font-black text-sm hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                   >
-                    {actionLoading === selected._id + "confirmed" ? "Confirming…" : "✓ Confirm Order"}
+                    {actionLoading === selected._id + ORDER.STATUS.CONFIRMED ? "Confirming…" : "✓ Confirm Order"}
                   </button>
                 </div>
               )}

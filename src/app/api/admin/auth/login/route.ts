@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { seedSuperAdmin, dbLoginAdmin } from "@/lib/db.proxy";
 import { signToken } from "@/lib/auth";
+import {AUTH} from '@/config'
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
     }
     const token = signToken({ id: admin.id, username: admin.username, role: admin.role, name: admin.name });
     const res = NextResponse.json({ success: true, admin });
-    res.cookies.set("admin_token", token, {
+    res.cookies.set(AUTH.COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
