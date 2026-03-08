@@ -27,6 +27,7 @@ export default function Checkout() {
   const [mobileProvider, setMobileProvider] = useState<"bkash" | "nagad">("bkash");
   const [mobileNum, setMobileNum] = useState("");
   const [mobileTxn, setMobileTxn] = useState("");
+  const [mobileNumTouched, setMobileNumTouched] = useState(false);
 
   // Load delivery info from localStorage after mount
   useEffect(() => {
@@ -47,6 +48,7 @@ export default function Checkout() {
   const [placing, setPlacing] = useState(false);
   const [placeError, setPlaceError] = useState("");
   const [showSummary, setShowSummary] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
 
   const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
   const shipping = 80;
@@ -399,14 +401,21 @@ export default function Checkout() {
                         }}
                         className={inputCls}
                         onFocus={(e) => {
+                          if (key === "phone") setPhoneTouched(false);
                           e.target.style.borderColor = G;
                           e.target.style.boxShadow = `0 0 0 3px ${G}18`;
                         }}
                         onBlur={(e) => {
+                          if (key === "phone") setPhoneTouched(true);
                           e.target.style.borderColor = "rgba(0,0,0,0.1)";
                           e.target.style.boxShadow = "none";
                         }}
                       />
+                      {key === "phone" && phoneTouched && form.phone.length > 0 && form.phone.length !== 11 && (
+                        <p className="text-xs text-red-500 font-semibold mt-1">
+                          ফোন নম্বর অবশ্যই ১১ সংখ্যার হতে হবে
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -567,9 +576,16 @@ export default function Checkout() {
                           placeholder="01XXXXXXXXX"
                           value={mobileNum}
                           onChange={(e) => setMobileNum(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                          onFocus={() => setMobileNumTouched(false)}
+                          onBlur={() => setMobileNumTouched(true)}
                           className="w-full bg-white border rounded-xl px-4 py-3 text-sm text-slate-700 placeholder-slate-300 focus:outline-none"
                           style={{ borderColor: mobileProvider === "bkash" ? "#f9a8c9" : "#fed7aa" }}
                         />
+                        {mobileNumTouched && mobileNum.length > 0 && mobileNum.length !== 11 && (
+                          <p className="text-xs text-red-500 font-semibold mt-1">
+                            ফোন নম্বর অবশ্যই ১১ সংখ্যার হতে হবে
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="text-xs font-black text-slate-500 mb-1.5 block uppercase tracking-wide">

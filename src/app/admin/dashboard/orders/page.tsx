@@ -1,42 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { ORDER } from "@/config";
+import { useGetOrders, useUpdateOrder } from "@/hooks/orders";
+import type { Order, OrderItem } from "@/hooks/orders";
 import type { OrderStatus, PaymentMethod } from "@/lib/db.proxy";
-
-interface OrderItem {
-  bookId: string;
-  title: string;
-  author: string[];
-  cover: string;
-  price: number;
-  qty: number;
-}
-
-interface Order {
-  _id: string;
-  orderNumber: string;
-  customer: {
-    name: string;
-    phone: string;
-    address: string;
-    city: string;
-    note?: string;
-  };
-  items: OrderItem[];
-  subtotal: number;
-  shipping: number;
-  total: number;
-  payment: {
-    method: PaymentMethod;
-    mobileNumber?: string;
-    transactionId?: string;
-  };
-  status: OrderStatus;
-  handledBy?: string;
-  handledAt?: string;
-  createdAt: string;
-}
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   [ORDER.STATUS.PENDING]: "Pending",
@@ -68,7 +36,7 @@ function fmtDate(iso: string) {
 }
 
 function isoDate(iso: string) {
-  return iso.slice(0, 10); // "YYYY-MM-DD"
+  return iso.slice(0, 10);
 }
 
 function RadioGroup<T extends string>({
@@ -115,11 +83,8 @@ function RadioGroup<T extends string>({
 }
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Order | null>(null);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [error, setError] = useState("");
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
   // Filter state
@@ -129,43 +94,33 @@ export default function OrdersPage() {
   const [filterPayment, setFilterPayment] = useState<PaymentMethod | "all">("all");
   const [filterStatus, setFilterStatus] = useState<OrderStatus | "all">("all");
 
-  const fetchOrders = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/admin/orders", { credentials: "include" });
-      if (!res.ok) throw new Error("Failed to load orders");
-      setOrders(await res.json());
-    } catch {
-      setError("Could not load orders. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // ─── Data fetching ───────────────────────────────────────
+  const { data: orders = [], isLoading, isError, refetch } = useGetOrders();
 
-  useEffect(() => { fetchOrders(); }, [fetchOrders]);
+  // ─── Mutation ────────────────────────────────────────────
+  const { mutate: updateOrder } = useUpdateOrder();
 
-  async function handleAction(orderId: string, status: typeof ORDER.STATUS.CONFIRMED | typeof ORDER.STATUS.CANCELLED) {
-    setActionLoading(orderId + status);
-    try {
-      const res = await fetch(`/api/admin/orders/${orderId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ status }),
-      });
-      if (!res.ok) {
-        const d = await res.json();
-        alert(d.error || "Failed to update order");
-        return;
+  function handleAction(
+    orderId: string,
+    status: typeof ORDER.STATUS.CONFIRMED | typeof ORDER.STATUS.CANCELLED
+  ) {
+    setActionLoadingId(orderId + status);
+    updateOrder(
+      { id: orderId, status },
+      {
+        onSuccess: () => {
+          setSelected(null);
+          setActionLoadingId(null);
+        },
+        onError: (err) => {
+          const msg =
+            (err.response?.data as { error?: string })?.error ??
+            "Failed to update order";
+          alert(msg);
+          setActionLoadingId(null);
+        },
       }
-      await fetchOrders();
-      if (selected?._id === orderId) setSelected(null);
-    } catch {
-      alert("Something went wrong.");
-    } finally {
-      setActionLoading(null);
-    }
+    );
   }
 
   function clearFilters() {
@@ -180,9 +135,9 @@ export default function OrdersPage() {
     customerName || bookName || filterDate || filterPayment !== "all" || filterStatus !== "all";
 
   const filtered = useMemo(() => {
-    return orders.filter((o) => {
+    return orders.filter((o: Order) => {
       if (customerName && !o.customer.name.toLowerCase().includes(customerName.toLowerCase())) return false;
-      if (bookName && !o.items.some((i) => i.title.toLowerCase().includes(bookName.toLowerCase()))) return false;
+      if (bookName && !o.items.some((i: OrderItem) => i.title.toLowerCase().includes(bookName.toLowerCase()))) return false;
       if (filterDate && isoDate(o.createdAt) !== filterDate) return false;
       if (filterPayment !== "all" && o.payment.method !== filterPayment) return false;
       if (filterStatus !== "all" && o.status !== filterStatus) return false;
@@ -190,12 +145,11 @@ export default function OrdersPage() {
     });
   }, [orders, customerName, bookName, filterDate, filterPayment, filterStatus]);
 
-  // Summary counts (from all orders, not filtered)
   const counts = {
     all: orders.length,
-    pending: orders.filter((o) => o.status === ORDER.STATUS.PENDING).length,
-    confirmed: orders.filter((o) => o.status === ORDER.STATUS.CONFIRMED).length,
-    cancelled: orders.filter((o) => o.status === ORDER.STATUS.CANCELLED).length,
+    pending: orders.filter((o: Order) => o.status === ORDER.STATUS.PENDING).length,
+    confirmed: orders.filter((o: Order) => o.status === ORDER.STATUS.CONFIRMED).length,
+    cancelled: orders.filter((o: Order) => o.status === ORDER.STATUS.CANCELLED).length,
   };
 
   return (
@@ -224,7 +178,7 @@ export default function OrdersPage() {
             )}
           </button>
           <button
-            onClick={fetchOrders}
+            onClick={() => refetch()}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 transition-all"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -253,7 +207,6 @@ export default function OrdersPage() {
       {/* Filter Panel */}
       {showFilters && (
         <div className="bg-white border border-slate-100 rounded-2xl shadow-sm p-5 mb-4 space-y-5">
-          {/* Text inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">
@@ -292,7 +245,6 @@ export default function OrdersPage() {
             </div>
           </div>
 
-          {/* Radio filters */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <RadioGroup
               label="Payment Method"
@@ -330,15 +282,15 @@ export default function OrdersPage() {
       )}
 
       {/* Error */}
-      {error && (
+      {isError && (
         <div className="mb-4 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-semibold">
-          {error}
+          Could not load orders. Please try again.
         </div>
       )}
 
       {/* Table */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
           </div>
@@ -368,7 +320,7 @@ export default function OrdersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {filtered.map((order) => {
+                {filtered.map((order: Order) => {
                   const sc = STATUS_COLORS[order.status];
                   return (
                     <tr key={order._id} className="hover:bg-slate-50/60 transition-colors">
@@ -379,7 +331,7 @@ export default function OrdersPage() {
                       </td>
                       <td className="px-4 py-3 hidden md:table-cell max-w-xs">
                         <div className="space-y-0.5">
-                          {order.items.map((item, i) => (
+                          {order.items.map((item: OrderItem, i: number) => (
                             <p key={i} className="text-xs text-slate-700 truncate">
                               <span className="font-semibold">{item.title}</span>
                               <span className="text-slate-400 ml-1">×{item.qty}</span>
@@ -480,7 +432,7 @@ export default function OrdersPage() {
               <section>
                 <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Books Ordered</h3>
                 <div className="space-y-2">
-                  {selected.items.map((item, i) => (
+                  {selected.items.map((item: OrderItem, i: number) => (
                     <div key={i} className="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
                       <img src={item.cover} alt={item.title} className="w-10 h-14 object-cover rounded-lg shadow-sm shrink-0" />
                       <div className="flex-1 min-w-0">
@@ -531,17 +483,17 @@ export default function OrdersPage() {
                 <div className="flex gap-3 pt-1">
                   <button
                     onClick={() => handleAction(selected._id, ORDER.STATUS.CANCELLED)}
-                    disabled={!!actionLoading}
+                    disabled={!!actionLoadingId}
                     className="flex-1 py-3 rounded-xl border-2 border-red-200 text-red-600 font-black text-sm hover:bg-red-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {actionLoading === selected._id + ORDER.STATUS.CANCELLED ? "Cancelling…" : "✕ Cancel Order"}
+                    {actionLoadingId === selected._id + ORDER.STATUS.CANCELLED ? "Cancelling…" : "✕ Cancel Order"}
                   </button>
                   <button
                     onClick={() => handleAction(selected._id, ORDER.STATUS.CONFIRMED)}
-                    disabled={!!actionLoading}
+                    disabled={!!actionLoadingId}
                     className="flex-1 py-3 rounded-xl bg-emerald-600 text-white font-black text-sm hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                   >
-                    {actionLoading === selected._id + ORDER.STATUS.CONFIRMED ? "Confirming…" : "✓ Confirm Order"}
+                    {actionLoadingId === selected._id + ORDER.STATUS.CONFIRMED ? "Confirming…" : "✓ Confirm Order"}
                   </button>
                 </div>
               )}

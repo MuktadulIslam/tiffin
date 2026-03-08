@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import { QueryProvider } from "@/lib/QueryProvider";
 
 export const metadata: Metadata = {
   title: "TifFin — Biology Books",
@@ -21,7 +22,9 @@ export default function RootLayout({
         />
       </head>
       <body style={{ fontFamily: "'Lato',Georgia,sans-serif" }}>
-        <CartProvider>{children}</CartProvider>
+        <QueryProvider>
+          <CartProvider>{children}</CartProvider>
+        </QueryProvider>
       </body>
     </html>
   );
