@@ -250,7 +250,7 @@ export default function SingleBook({ book: bk }: { book: Book }) {
                   ["You Save", `${toBnDigits(Math.round((1 - bk.price / bk.originalPrice) * 100))}% ${tr("off")}`],
                   ["Tag", bk.tag],
                 ] as ([string, string | number] | null)[])
-                  .filter(Boolean)
+                  .filter((x): x is [string, string | number] => x !== null)
                   .map(([k, v]) => (
                     <div key={String(k)} className="flex justify-between items-center px-3 py-2.5 rounded-xl bg-white border border-black/5 shadow-sm">
                       <span className="text-slate-400 text-xs font-semibold">{tr(String(k))}</span>
